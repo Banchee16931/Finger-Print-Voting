@@ -9,16 +9,12 @@ import (
 
 func TestLowerThanFourty(t *testing.T) {
 	// Assign
-	expected := 39
+	input := 39
+	expected := true
 
 	// Act
-	actual := example.LowerThanFourty(expected)
+	actual := example.LowerThanFourty(input)
 
 	// Assert
 	assert.Equal(t, expected, actual)
-}
-
-func TestThatFails(t *testing.T) {
-	// Assert
-	assert.Fail(t, "this one will fail")
 }
