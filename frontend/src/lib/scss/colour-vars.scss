@@ -1,0 +1,17 @@
+$primary: #1d70b8;
+$secondary: #ffffff;
+$background: #FFFFFF;
+$background-header: #000000;
+$background-footer: #F3F2F1;
+$text: #0B0C0C;
+$text-inverted: #ffffff;
+
+:root {
+    --primary: #{$primary};
+    --secondary: #{$secondary};
+    --background: #{$background};
+    --background-header: #{$background-header};
+    --background-footer: #{$background-footer};
+    --text: #{$text};
+    --text-inverted: #{$text-inverted};
+}

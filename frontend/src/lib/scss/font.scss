@@ -1,0 +1,101 @@
+// Thin Fonts
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Thin.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 100;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-ThinItalic.ttf') format("truetype");
+}
+
+// Light Fonts
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Light.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 300;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-LightItalic.ttf') format("truetype");
+}
+
+// Regular Fonts
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Regular.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Italic.ttf') format("truetype");
+}
+
+// Medium Fonts
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Medium.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-MediumItalic.ttf') format("truetype");
+}
+
+// Bold Fonts
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Bold.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-BoldItalic.ttf') format("truetype");
+}
+
+// Black Fonts
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-Black.ttf') format("truetype");
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: italic;
+    font-weight: 900;
+    font-display: swap;
+    src: url('./third-party/Roboto/Roboto-BlackItalic.ttf') format("truetype");
+}

@@ -1,0 +1,25 @@
+
+
+.spaced-container {
+    @include animated;
+
+    width: 100%;
+    max-width: 100%;
+    padding-left: $general-padding;
+    padding-right: $general-padding;
+    margin-left: auto;
+    margin-right: auto;
+
+    // correct spacing dependent on size of window
+    @include md-and-up {
+        max-width: 700px;
+    }
+    @include lg-and-up {
+        max-width: 900px;
+    }
+
+    // Extra extra large sizing for container in-case of large monitors
+    @media(min-width: 1600px) {
+        max-width: 1100px;
+    }
+}
