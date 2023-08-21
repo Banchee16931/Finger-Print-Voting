@@ -1,0 +1,108 @@
+@use "sass:color";
+
+.card {
+    background-color: transparent;
+    height: 150px;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    position: relative;
+    background-color: color.adjust($primary, $alpha: -0.8, $lightness: +5%);
+    overflow: clip;
+
+    .circle-one {
+        content: "";
+        position: absolute;
+        background-color: var(--secondary);
+        opacity: .5;
+        right: -40px;
+        bottom: -40px;
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+    }
+
+    .circle-two {
+        content: "";
+        position: absolute;
+        background-color: var(--secondary);
+        opacity: .5;
+        height: 60px;
+        width: 60px;
+        right: -30px;
+        bottom: 30px;
+        border-radius: 50%;
+    }
+
+    
+
+    .content {
+        display: grid;
+        grid-gap: 10px;
+        grid-template-areas:
+            'title right'
+            'subtitle right';
+        width: 100%;
+
+        h4, h5 {
+            grid-area: title;
+            font-weight: 500;
+            font-size: 1rem;
+            margin-top: 0;
+            overflow-wrap: break-word;
+        }
+
+        .subtitle {
+            grid-area: subtitle;
+            font-size: 14px;
+            overflow-wrap: break-word;
+
+        }
+
+        .ceveron {
+            grid-area: right;
+            content: "›";
+    
+            color: var(--text-inverted);
+            background-color: var(--primary);
+    
+            height: 27px;
+            width: 27px;
+            border-radius: 50%;
+            margin-left: auto;
+            padding-left: 5px;
+    
+            text-align: center;
+            line-height: 1.5rem;
+            padding-left: 2px;
+            font-size: 30px;
+        }
+    }
+}
+
+.card:hover:not(:active) {
+    cursor: pointer;
+    h4, h5 {
+        @include animated;
+        font-size: 1.05rem;
+        margin-bottom: 7px;
+    }
+
+    .ceveron {
+        @include animated;
+        scale: 1.1;
+    }
+}
+
+.card:active {
+    cursor: pointer;
+    user-select: none;
+    h4, h5 {
+        font-size: inherit;
+        margin-bottom: 0.5rem;
+    }
+
+    .ceveron {
+        scale: inherit;
+    }
+}

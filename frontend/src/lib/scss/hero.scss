@@ -1,0 +1,32 @@
+.hero {
+    @include animated;
+
+    display: block;
+    color: var(--text-inverted);
+    background-color: var(--primary);
+    padding-top: 3%;
+    padding-bottom: 3%;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
+        position: relative;
+        z-index: 2;
+        color: inherit;
+        margin-top: 0px;
+
+        margin-bottom: 30px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    p {
+        font-size: 1.5rem;
+    }
+}

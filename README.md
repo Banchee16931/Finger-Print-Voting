@@ -10,6 +10,10 @@ Install the node modules
 ```cmd
 npm i
 ```
+Prepare the styles
+```cmd
+npm run prepare
+```
 Run the app
 ```cmd
 npm run dev

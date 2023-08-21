@@ -1,0 +1,16 @@
+
+@mixin md-and-up {
+    @media (min-width: 575px) {
+        @content;
+    }
+}
+
+@mixin lg-and-up {
+    @media (min-width: 1100px) {
+        @content;
+    }
+}
+
+@mixin animated {
+    transition: all 250ms cubic-bezier(0.25, 1, 0.5, 1) !important;
+}

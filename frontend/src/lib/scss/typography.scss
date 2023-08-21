@@ -1,0 +1,155 @@
+:root {
+    --font: 'Roboto', sans-serif;
+}
+// defaults
+html {
+    font-family: var(--font);
+    font-size: 14px;
+
+    @include md-and-up {
+        font-size: 15px;
+    }
+
+    @include lg-and-up {
+        font-size: 16px;
+    }
+}
+
+// headings
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-bottom: 0.5rem;
+    margin-top: 2rem;
+    font-weight: 600;
+    line-height: 1.3;
+    font-family: var(--font);
+    color: var(--text);   
+
+    &.small {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-left: 0.3rem;
+        opacity: .6;
+    }
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 3rem;
+    text-rendering: optimizeLegibility;
+}
+
+h4,
+h5,
+h6 {
+    margin-top: 2rem;
+}
+
+h1 {
+    font-size: 2.8rem;
+
+    @include md-and-up {
+        font-size: 3rem;
+    }
+}
+
+h2 {
+    font-size: 2.2rem;
+
+    @include md-and-up {
+        font-size: 2.5rem;
+    }
+}
+
+
+h3 {
+    font-size: 1.5rem;
+
+    @include md-and-up {
+        font-size: 1.9rem;
+    }
+}
+
+
+h4 {
+    font-size: 1.25rem;
+}
+
+
+h5 {
+    font-size: 1rem;
+}
+
+h6 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    opacity: .9;
+}
+
+h4,
+h5,
+h6 {
+    font-weight: 550;
+}
+
+// paragraph
+p, a {
+    line-height: 1.7rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+
+    max-width: 900px;
+
+    &:not(:last-child) {
+        margin-bottom: .6rem;
+    }
+
+    &.lead {
+        font-size: 1.2rem;
+        line-height: 1.9rem;
+    }
+
+    &.small {
+        font-size: 0.75rem;
+        font-weight: 400;
+        margin-left: 0.3rem;
+    }
+}
+
+// lists
+ul,
+ol {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+ul li,
+ol li {
+    line-height: 1.5rem;
+}
+
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+// links
+a {
+    color: var(--primary)
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
