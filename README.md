@@ -1,5 +1,8 @@
-# temp
-This is a University Module
+# Finger Print Reader
+This is a University of Hertfordshire Coding Module
+
+# Back-end
+[link](./backend/README.md)
 
 # Running FrontEnd as Dev
 First you need to be in the frontend folder:
