@@ -2,12 +2,11 @@
 
 .card {
     background-color: transparent;
-    height: 150px;
     padding: 10px;
     border-radius: 5px;
     display: inline-block;
     position: relative;
-    background-color: color.adjust($primary, $alpha: -0.8, $lightness: +5%);
+    background-color: color.adjust($primary, $alpha: -0.82, $lightness: +5%);
     overflow: clip;
 
     .circle-one {
@@ -37,6 +36,7 @@
     
 
     .content {
+        @include animated;
         display: grid;
         grid-gap: 10px;
         grid-template-areas:
@@ -60,6 +60,7 @@
         }
 
         .ceveron {
+            z-index: 10;
             grid-area: right;
             content: "›";
     
@@ -80,7 +81,7 @@
     }
 }
 
-.card:hover:not(:active) {
+.link-card:hover:not(:active) {
     cursor: pointer;
     h4, h5 {
         @include animated;
@@ -94,7 +95,7 @@
     }
 }
 
-.card:active {
+.link-card:active {
     cursor: pointer;
     user-select: none;
     h4, h5 {

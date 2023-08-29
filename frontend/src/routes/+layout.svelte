@@ -1,7 +1,29 @@
 <script lang="ts">
     import Header from "../lib/components/Header.svelte"
     import "../lib/scss/styling.scss";
+	import type { LayoutData } from "./$types";
+
+    export let data: LayoutData;
+
+
+    let resetTimer: () => {};
+    function activityDetected() {
+        if (resetTimer) {
+            resetTimer()
+        }
+    }
 </script>
 
-<Header/>
-<slot/>
+<div class="interaction-detecter" on:mousemove={activityDetected} on:click={activityDetected} on:keypress={activityDetected} role="none">
+    {#if data.user}
+        <Header bind:resetInactivityTimer={resetTimer} userDetails={data.user}/>
+    {/if}
+    <slot/>
+</div>
+
+<style>
+    .interaction-detecter {
+        width: 100%;
+        height: 100%;
+    }
+</style>

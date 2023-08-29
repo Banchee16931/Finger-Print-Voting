@@ -1,29 +1,50 @@
 package database
 
-import "finger-print-voting-backend/internal/types"
+import (
+	"database/sql"
+	"finger-print-voting-backend/internal/config"
+	"fmt"
 
-type Client interface {
-	IsSchemaSetup() (bool, error)
-	SetupSchema() error
+	_ "github.com/lib/pq"
+)
 
-	StoreAdmin(user types.User) error
-	StoreVoter(voter types.Voter) error
-	GetVoter(username string) (types.Vote, error)
-	GetUser(username string) (types.Vote, error)
-	DeleteVoter(voter types.Voter) error
+type Client struct {
+	db *sql.DB
+}
 
-	StoreElection(election types.Election) error
-	GetElections() ([]types.Election, error)
-	DeleteCandidates(electionID int) error
+func NewDatabase(cfg config.DBConfig) (*Client, error) {
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		cfg.Server, cfg.Port, cfg.Username,
+		cfg.Password, cfg.Database)
 
-	StoreVote(vote types.Vote) error
-	GetVotes(electionID int) ([]types.Vote, error)
-	DeleteVotes(electionID int) error
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		return nil, err
+	}
 
-	StoreRegistrant(registrant types.Registrant) error
-	GetRegistrants() ([]types.Registrant, error)
-	DeleteRegistrant(registrantID int) error
+	client := Client{
+		db: db,
+	}
 
-	StoreResult(result types.Result) error
-	GetResults(electionID int) ([]types.Result, error)
+	return &client, nil
+}
+
+func (client *Client) EnsureValidSchema() error {
+	setup, err := client.IsSchemaSetup()
+	if err != nil {
+		return err
+	}
+
+	if !setup {
+		if err := client.SetupSchema(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (client *Client) Close() error {
+	return client.db.Close()
 }
