@@ -16,3 +16,12 @@
         }
     }
 }
+
+.card-list {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-gap: $general-padding;
+    .card {
+        width: 100%;
+    }
+}

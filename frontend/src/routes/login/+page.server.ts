@@ -49,20 +49,17 @@ export const actions: Actions = {
             body: JSON.stringify(loginRequest)
         }).then(async (res) => {
             if (!res.ok) {
-                console.log("failing")
                 let err: CommonError = await res.json()
 
                 failureStatus = 400
                 failure = err.message
             }
         }).catch((err: CommonError) => {
-            console.log("failing 2")
             failureStatus = 400
             failure = err.message
         })
 
         if (failure) {
-            console.log("reported failure")
             return fail(failureStatus, {
 				error: failure
 			});

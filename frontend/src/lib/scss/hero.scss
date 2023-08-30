@@ -1,6 +1,8 @@
 .hero {
     @include animated;
 
+    z-index: 10000;
+
     display: block;
     color: var(--text-inverted);
     background-color: var(--primary);
@@ -15,7 +17,6 @@
     h6,
     p {
         position: relative;
-        z-index: 2;
         color: inherit;
         margin-top: 0px;
 
