@@ -1,0 +1,173 @@
+@use "sass:color";
+
+$header-height: 50px;
+
+.header {
+    @include animated;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    width: 100%;
+    height: $header-height;
+
+    background-color: var(--background-secondary);
+    color: var(--text-inverted);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+
+    @include md-and-up {
+        flex-wrap: nowrap;
+    }
+
+    .brand {
+        order: 1;
+        flex-shrink: 0;
+        flex-grow: 0;
+
+        display: flex;
+        flex-direction: row;
+        vertical-align: middle;
+        align-items: center;
+        height: auto;
+        line-height: $header-height;
+
+        margin-right: auto;
+
+        
+
+        a {
+            display: flex;
+            vertical-align: middle;
+            align-items: center;
+            height: auto;
+            text-decoration: none;
+            padding-bottom: 3px;
+
+            img {
+                height: 0.5 * $header-height;
+                padding-right: $general-padding;
+                margin-bottom: 2px;
+            }
+
+            .text {
+                padding-top: 2px;
+                color: var(--text-inverted);
+                text-decoration: none;
+                font-size: 30px;
+                font-weight: 520;
+                line-height: 0.6 * $header-height;
+            }
+        }
+    }
+
+    .item {
+        color: var(--text-inverted);
+        order: 100;
+        margin-left: auto;
+        margin-top: 8px;
+        padding-bottom: 4px;
+        font-weight: 550;
+        text-decoration: none;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .user-options {
+        @include animated;
+        opacity: 0%;
+        visibility: hidden;
+        background-color: color.adjust($background-secondary, $lightness: +12%);
+        position: absolute;
+        top: 100%;
+        right: 0;
+
+        width: fit-content;
+        display: grid;
+        gap: 10px;
+        padding: 10px;
+        padding-left: 0;
+        padding-right: 0;
+        border-radius: 0px 0 10px 10px;
+        grid-template-areas: 'id-tag id'
+        'access-tag access'
+        'divider divider'
+        'first-tag first'
+        'last-tag last'
+        'logout logout';
+
+        .content-left {
+            white-space: nowrap;
+            padding-left: 20px;
+        }
+
+        .content-right {
+            white-space: nowrap;
+            padding-right: 20px;
+        }
+
+        .divider {
+            grid-area: divider;
+            height: 1px;
+            background-color: color.adjust($background-tertiary, $lightness: -50%);
+            width: 85%;
+            margin-right: auto;
+            margin-left: auto
+        }
+
+        .logout {
+            grid-area: logout;
+            text-align: left;
+            padding-left: 20px;
+            padding-right: 20px; 
+        }
+    }
+
+    .name {
+        margin-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    .hover-extend {
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-options-appear {
+        @include animated;
+        visibility: visible;
+        opacity: 100%;
+    }
+
+
+    .hoverable {
+        position: relative;
+        display: inline-block;
+    }
+
+    .hoverable::after {
+        @include animated;
+        content: "";
+        position: absolute;
+        left:0;
+        top: 100%;
+        width: 0px;
+        height: 2px;
+        background-color: $background;
+    }
+
+    .hoverable:hover::after {
+        width: 100%;
+    }
+
+    .hoverable-force .hoverable::after {
+        width: 100%;
+    }
+}

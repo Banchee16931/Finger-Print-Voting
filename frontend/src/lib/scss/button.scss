@@ -1,0 +1,85 @@
+@use "sass:color";
+
+.button {
+    box-sizing: border-box;
+    border:  1px solid $outline;
+    border-bottom: 2px solid $outline;
+    position: relative;
+
+    $mainColour: #ffffff;
+
+    user-select: none;
+
+    &:active:not(.disabled) {
+        top: 1px;
+    }
+
+    &.disabled {
+        @include animated;
+        color: transparent;
+    }
+}
+
+
+
+.button-background-color-primary {
+    @include animated;
+    background-color: $primary;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($primary, $lightness: -10%);
+    }
+}
+
+.button-background-color-secondary {
+    @include animated;
+    background-color: $secondary;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($secondary, $lightness: -10%);
+    }
+}
+
+.button-background-color-background {
+    @include animated;
+    background-color: $background;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($background, $lightness: -10%);
+    }
+}
+
+.button-background-color-background-secondary {
+    @include animated;
+    background-color: $background-secondary;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($background-secondary, $lightness: +30%);
+    }
+}
+
+.button-background-color-background-tertiary {
+    @include animated;
+    background-color: $background-tertiary;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($background-tertiary, $lightness: -10%);
+    }
+}
+
+.button-background-color-danger {
+    @include animated;
+    background-color: $danger;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($danger, $lightness: -10%);
+    }
+}
+.button-background-color-success {
+    @include animated;
+    background-color: $success;
+
+    &:hover:not(:active):not(.disabled) {
+        background-color: adjust-color($success, $lightness: -10%);
+    }
+}

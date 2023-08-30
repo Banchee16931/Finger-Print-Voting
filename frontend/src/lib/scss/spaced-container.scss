@@ -23,3 +23,14 @@
         max-width: 1100px;
     }
 }
+
+.center-container {
+    display: flex;
+    flex-direction: column;
+    vertical-align: middle;
+    align-items: center;
+    justify-items: center;
+    align-content: center;
+    justify-content: center;
+    position: relative;
+}
