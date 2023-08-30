@@ -17,7 +17,7 @@ type Database interface {
 	GetVotes(electionID int) ([]types.Vote, error)
 	DeleteVotes(electionID int) error
 
-	StoreRegistrant(registrant types.Registrant) error
+	StoreRegistrant(registrant types.RegistrationRequest) error
 	GetRegistrants() ([]types.Registrant, error)
 	DeleteRegistrant(registrantID int) error
 

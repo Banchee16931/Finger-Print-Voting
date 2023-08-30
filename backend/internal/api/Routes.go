@@ -10,6 +10,7 @@ func (srv *Server) Route() {
 	srv.router = mux.NewRouter()
 
 	srv.router.HandleFunc("/login", srv.HandleLogin).Methods(http.MethodPost)
+	srv.router.HandleFunc("/register", srv.HandleRegister).Methods(http.MethodPost)
 
 	auth := srv.router.NewRoute().Subrouter()
 	auth.Use(srv.MiddlewareAuth)

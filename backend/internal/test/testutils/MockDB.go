@@ -25,7 +25,7 @@ func (client *MockDB) DeleteCandidates(electionID int) error {
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreRegistrant(registrant types.Registrant) error {
+func (client *MockDB) StoreRegistrant(registrant types.RegistrationRequest) error {
 	call := client.Called(registrant)
 	return call.Error(0)
 }
