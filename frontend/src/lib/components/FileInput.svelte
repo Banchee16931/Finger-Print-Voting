@@ -187,7 +187,7 @@
         });
     }
 
-    let value: string | undefined = undefined
+    export let value: string | undefined = undefined
 
 
     $: console.log("value: ", value)
@@ -220,7 +220,9 @@
     ```
 -->
 <div class="file-input">
+    {#if label}
     <small class="label">{label}</small>
+    {/if}
     <!-- create a dotted outline arroudn the input to show where files can be dropped -->
     <div class="container" 
     class:invalid={required && (files?.length === 0 || files == undefined)}

@@ -1,12 +1,11 @@
 <script lang="ts">
-    import Card from "$lib/components/Card.svelte"
     import CardList from "$lib/components/CardList.svelte"
     import Hero from "$lib/components/Hero.svelte"
     import TextInput from "$lib/components/TextInput.svelte"
 	import type { PageData } from "./$types";
     import type { UserAcceptanceRequest, Registrant, LoginRequest } from "$lib/types"
-    import { validateLoginRequest } from "$lib/types"
     import { NewError } from "$lib/types/CommonError";
+	import Dialog from "$lib/components/Dialog.svelte";
 
     export let data: PageData
 
@@ -127,6 +126,7 @@
     let hideForm = true
 
     function showForm() {
+        console.log("show form")
         errorMsg = ""
         hideForm = false
     }
@@ -139,39 +139,31 @@
 </Hero>
 
 {#if selectedRegistrant}
-<div class:hide={hideForm} class="bg">
-    <div class="dialog">
-        <form class="form card" on:submit|preventDefault={(e) => {if (selectedRegistrant) {accept(e, selectedRegistrant?.registrant_id)}}}>
-            <span class="circle-one"/>
-            <span class="circle-two"/>
-            
-            <div class="topbar">
-                <h3 class="color-text-inverted" style="margin-top: 5px;">
-                    Create New Users Details 
-                </h3>
-                <button class="xButton color-text-inverted" on:click={() => hideForm = true}>X</button>
+<Dialog bind:hide={hideForm} title="Create New Users Details" style="border-radius: 10px;">
+    <form class="form card dialogCard" on:submit|preventDefault={(e) => {if (selectedRegistrant) {accept(e, selectedRegistrant?.registrant_id)}}}>
+        <span class="circle-one"/>
+        <span class="circle-two"/>
+        
+        <div class="dialogContent">
+            <div class="column" style="margin-right: auto;">
+                <TextInput name="username" label="Username" required type="text" style="width: 250px;"/>
+                <TextInput name="password" label="Password" required type="password" style="width: 250px;"/>
+                <TextInput name="confirm-password" label="Confirm Password" required type="password" style="width: 250px;"/>
             </div>
-            <div class="dialogContent">
-                <div class="column" style="margin-right: auto;">
-                    <TextInput name="username" label="Username" required type="text" style="width: 250px;"/>
-                    <TextInput name="password" label="Password" required type="password" style="width: 250px;"/>
-                    <TextInput name="confirm-password" label="Confirm Password" required type="password" style="width: 250px;"/>
-                </div>
-                <div class="column" style="margin-left: auto;">
-                    <h4 style="margin-top: 5px;">{nameCapatilsation(selectedRegistrant.first_name)} {nameCapatilsation(selectedRegistrant.last_name)}</h4>
-                    <span><strong>Local Authority: </strong>{selectedRegistrant.location}</span>
-                    <span><strong>Phone No: </strong>{selectedRegistrant.phone_no}</span>
-                    <span><strong>Email: </strong>{selectedRegistrant.email}</span>
-                </div>
+            <div class="column" style="margin-left: auto;">
+                <h4 style="margin-top: 5px;">{nameCapatilsation(selectedRegistrant.first_name)} {nameCapatilsation(selectedRegistrant.last_name)}</h4>
+                <span><strong>Local Authority: </strong>{selectedRegistrant.location}</span>
+                <span><strong>Phone No: </strong>{selectedRegistrant.phone_no}</span>
+                <span><strong>Email: </strong>{selectedRegistrant.email}</span>
             </div>
-            <button class="button button-background-color-primary color-text-inverted" type="submit">Add User</button>
-            
-            {#if errorMsg !== ""}
-            <span class="error" style="width: 250px;">{errorMsg}</span>
-            {/if}
-        </form>
-    </div>
-</div>
+        </div>
+        <button class="button button-background-color-primary color-text-inverted" type="submit">Add User</button>
+        
+        {#if errorMsg !== ""}
+        <span class="error" style="width: 250px;">{errorMsg}</span>
+        {/if}
+    </form>
+</Dialog>
 {/if}
 
 <div class="spaced-container">
@@ -209,69 +201,11 @@
 <style lang="scss">
     $imageSizing: 200px;
 
-    .topbar {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        width: 100%;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-top: 5px;
-        background: var(--primary)
-    }
-
     .dialogContent {
         display: flex;
         flex-direction: row;
         gap: 30px;
         width: 100%;
-        margin-top: 60px;
-    }
-
-    .xButton {
-        width: 35px;
-        height: 35px;
-        font-size: 25px;
-        margin-left: auto;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: transparent;
-        border: none;
-        float: right;
-    }
-
-    .xButton:hover:not(:active) {
-        font-size: 28px;
-    }
-    
-    .hide {
-        display: none !important;
-    }
-
-    .bg {
-        position: fixed;
-        z-index: 1000;
-        top: 0;
-        left: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.66);
-    }
-
-    .dialog {
-        position: absolute;
-        background: white;
-        border-radius: 10px;
     }
 
     .form {
@@ -280,6 +214,10 @@
 
     .card {
         padding: 20px;
+    }
+
+    .dialogCard {
+        border-radius: 0;
     }
 
     .imageContainer {
