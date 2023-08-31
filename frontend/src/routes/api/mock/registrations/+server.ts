@@ -9,13 +9,9 @@ export const GET: RequestHandler = async (e) => {
 
     let authHeader = req.headers.get("Autherization")
 
-    if (authHeader) {
-        console.log("auth header", authHeader)
-
-        if (Authority(authHeader) === "admin") {
-            return new Response(JSON.stringify(registrations), {status: 200});
-        }
+    if (!authHeader || Authority(authHeader) !== "admin") {
+        return new Response(JSON.stringify(NewError("invalid credentials")), {status: 401});
     }
 
-    return new Response(JSON.stringify(NewError("invalid credentials")), {status: 401});
+    return new Response(JSON.stringify(registrations), {status: 200});
 };

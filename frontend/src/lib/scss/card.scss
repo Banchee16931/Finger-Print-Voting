@@ -1,6 +1,7 @@
 @use "sass:color";
 
 .card {
+    @include animated;
     background-color: transparent;
     padding: 10px;
     border-radius: 5px;

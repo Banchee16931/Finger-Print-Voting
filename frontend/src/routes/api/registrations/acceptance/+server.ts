@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import { BACKEND_ENDPOINT } from '$env/static/private';
 import { mockPath } from "../../mock/mockEndpoint";
 import { invalidate, invalidateAll } from '$app/navigation';
+import { NewError } from '$lib/types/CommonError';
 
 export const POST: RequestHandler = async (e) => {
     console.log("/registrations/acceptance")
@@ -10,7 +11,7 @@ export const POST: RequestHandler = async (e) => {
         console.log("autherisation exists")
         e.request.headers.set("Autherization", authorization)
     } else {
-        return new Response("", { status: 401 })
+        return new Response(JSON.stringify(NewError("invalid credentials")), { status: 401 })
     }
     
     
