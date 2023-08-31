@@ -87,9 +87,17 @@ export const actions: Actions = {
 			});
         }
 
+        let now = new Date()
+        let today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        if (startDate.getTime() < today.getTime()) {
+            return fail(400, {
+				error: "date has already passed"
+			});
+        }
+
         if (newElection.candidates.length < 2) {
             return fail(400, {
-				error: "less than 3 candidates"
+				error: "less than two candidates"
 			});
         }
 
