@@ -1,3 +1,3 @@
-<div class="card-grid">
+<div class="card-grid" {...$$restProps}>
     <slot/>
 </div>

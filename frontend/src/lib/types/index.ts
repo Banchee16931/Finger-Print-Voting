@@ -8,3 +8,4 @@ export * from './registrationRequest';
 export * from './loginRequest';
 export * from './UserData';
 export * from './UserResponse';
+export * from './UserAcceptanceRequest';

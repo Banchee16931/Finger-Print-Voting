@@ -27,7 +27,7 @@
     }
 </script>
 
-<div class="input">
+<div class="input" {...$$restProps}>
     {#if label}
         <label for={name}>{label}</label>
     {/if}
@@ -37,7 +37,6 @@
             name={name}
             type="text"
             value={value}
-            {...$$restProps}
             on:dragenter
             on:dragover
             on:dragleave

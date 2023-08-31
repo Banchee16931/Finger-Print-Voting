@@ -1,4 +1,6 @@
-import type { Registrant } from "$lib/types";
+import type { Registrant, UserStore } from "$lib/types";
+
+export let users: UserStore[] = []
 
 export let registrations: Registrant[] = [
     {

@@ -23,47 +23,48 @@ $success: #1FB800;
 }
 
 .color-primary {
-    color: var(--primary)
+    color: var(--primary) !important
 }
 .color-secondary {
-    color: var(--text-inverted)
+    color: var(--secondary) !important
 }
+
 .color-text {
-    color: var(--text)
+    color: var(--text) !important
 }
 .color-text-inverted {
-    color: var(--text-inverted)
+    color: var(--text-inverted) !important
 }
 .color-danger {
-    color: var(--danger)
+    color: var(--danger) !important
 }
 .color-success {
-    color: var(--success)
+    color: var(--success) !important
 }
 
 .background-color-primary {
-    background-color: var(--primary)
+    background-color: var(--primary) !important
 }
 
 .background-color-secondary {
-    background-color: var(--secondary)
+    background-color: var(--secondary) !important
 }
 
 .background-color-background {
-    background-color: var(--background)
+    background-color: var(--background) !important
 }
 
 .background-color-background-secondary {
-    background-color: var(--background-secondary)
+    background-color: var(--background-secondary) !important
 }
 
 .background-color-background-tertiary {
-    background-color: var(--background-tertiary)
+    background-color: var(--background-tertiary) !important
 }
 
 .background-color-danger {
-    background-color: var(--danger)
+    background-color: var(--danger) !important
 }
 .background-color-success {
-    background-color: var(--success)
+    background-color: var(--success) !important
 }

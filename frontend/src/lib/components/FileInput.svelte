@@ -171,6 +171,7 @@
             shrinkImage(file)
             .then((shrunkenImage) => {
                 if (fileStrings) {
+                    console.log(shrunkenImage)
                     fileStrings.push(shrunkenImage)
                     value = fileStrings?.join(",")
                 }

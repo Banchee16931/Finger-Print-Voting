@@ -3,7 +3,7 @@
 
     export let name: string;
 
-    export let type: "text" | "password" | "email" | "search" | "tel" = "text";
+    export let type: "text" | "password" | "email" | "search" | "tel" | "date" = "text";
 
     export let label: string | null = null;
 

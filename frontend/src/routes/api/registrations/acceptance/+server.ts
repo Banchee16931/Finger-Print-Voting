@@ -1,9 +1,10 @@
 import type { RequestHandler } from './$types';
 import { BACKEND_ENDPOINT } from '$env/static/private';
 import { mockPath } from "../../mock/mockEndpoint";
+import { invalidate, invalidateAll } from '$app/navigation';
 
 export const POST: RequestHandler = async (e) => {
-    console.log("/registrations/accept")
+    console.log("/registrations/acceptance")
     let authorization = e.cookies.get("session")
     if (authorization) {
         console.log("autherisation exists")
@@ -12,12 +13,14 @@ export const POST: RequestHandler = async (e) => {
         return new Response("", { status: 401 })
     }
     
+    
+    let res:Response
     if (import.meta.env.DEV) {
-        return await e.fetch(mockPath(e.request.url), e.request)
+        res =  await e.fetch(mockPath(e.request.url), e.request)
+    } else {
+        res = await e.fetch(`${BACKEND_ENDPOINT}/registrations/acceptance`, e.request)
+        console.log("registrations response: ", res)
     }
-
-    let res = await e.fetch(`${BACKEND_ENDPOINT}/registrations`, e.request)
-    console.log("registrations response: ", res)
 
     return res
 };

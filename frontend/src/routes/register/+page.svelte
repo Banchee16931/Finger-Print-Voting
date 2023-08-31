@@ -20,6 +20,7 @@
     // The file given by the user that stores their fingerprint
     let fingerprintFiles: FileList| null = null
 
+    // Options
     let options: string[] = []
     import localAuthorities from "../../../../local-authorities.json"
     localAuthorities.forEach((authority) => {
@@ -80,7 +81,7 @@
                 <TextInput name="telephone" type="tel" label="Telephone No" required style="width: 250px;" working={working}/>
             </fieldset>
 
-            <Option name="location" options={options} label="local authority" working={working}/>
+            <Option name="location" options={options} label="Local Authority" working={working}/>
 
             <!-- file inputs -->
             <FileInput label="Proof of Identification" required name="identification" bind:identificationFiles accept=".png,.jpeg,.jpg" style="padding: 20px; padding-left: 50px; padding-right: 50px;" working={working}/>
