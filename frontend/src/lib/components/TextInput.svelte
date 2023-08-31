@@ -3,7 +3,7 @@
 
     export let name: string;
 
-    export let type: "text" | "password" | "email" | "search" | "tel" = "text";
+    export let type: "text" | "password" | "email" | "search" | "tel" | "date" = "text";
 
     export let label: string | null = null;
 
@@ -96,7 +96,6 @@
         <input on:keydown={(e) => keyDown(e)}
             id={name}
             {name}
-            disabled={working}
             {placeholder}
             {required}
             {type}
@@ -109,10 +108,10 @@
             on:paste
             on:input={handleInput}
             class:disable-focus-highlight={disableFocusHighlight}
-    />
+            />
         <button class={`color-${buttonColor} background-color-${buttonBackgroundColor} search-button input-button`} class:input-button-appear={type==="search" && !working} on:click={() => enter()}>
             {#if type==="search" && !working}
-            <Symbol name="search" color={buttonColor} variant="outlined"/>
+                <Symbol name="search" color={buttonColor} variant="outlined"/>
             {/if}
         </button>
 

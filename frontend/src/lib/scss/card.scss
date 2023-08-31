@@ -81,7 +81,7 @@
     }
 }
 
-.link-card:hover:not(:active) {
+.animated-card:hover:not(:active) {
     cursor: pointer;
     h4, h5 {
         @include animated;
@@ -95,7 +95,7 @@
     }
 }
 
-.link-card:active {
+.animated-card:active {
     cursor: pointer;
     user-select: none;
     h4, h5 {

@@ -2,216 +2,45 @@
     import Hero from "../../lib/components/Hero.svelte"
     import TextInput from "../../lib/components/TextInput.svelte"
 	import FileInput from '$lib/components/FileInput.svelte';
+    import Option from '$lib/components/Option.svelte';
 	import TickAnimation from '$lib/components/TickAnimation.svelte';
-	import type { RegistrationRequest } from '$lib/types/registrationRequest';
-    import { validateRegistrationRequest } from '$lib/types/registrationRequest';
-	import { NewError, errorPrefix, unidentifiedErrorPrefix } from '$lib/types/CommonError';
-    import type { CommonError } from '$lib/types/CommonError';
+	import type { ActionData } from "./$types";
+
+    /** @type {import('./$types').ActionData} */
+    export let form: ActionData;
+
+    $: if (form?.registered !== undefined) {
+        if (form?.registered === false) {
+            working = false
+        }
+    }
 
     // The file given by the user that stores the proof of identification
     let identificationFiles: FileList| null = null
     // The file given by the user that stores their fingerprint
     let fingerprintFiles: FileList| null = null
 
+    // Options
+    let options: string[] = []
+    import localAuthorities from "../../../../local-authorities.json"
+    localAuthorities.forEach((authority) => {
+        if (authority.local_authority.length !== 0) {
+            options.push(authority.local_authority[0])
+        }
+    })
+    options.sort()
+
     // If the registered screen/animation should appear
     let isRegistered: boolean = false;
 
+    $: if (form) {
+        if (form.registered != undefined) {
+            isRegistered = form.registered
+        }
+    }
+
     // Stops the user interacting with the elements as the form is being processed
     let working: boolean = false
-
-    // Shown as red text at bottom of form to alert the user of any issues that have occured with their request
-    let submissionError: string | null = null
-
-    // Message that reports 
-    const genericErrorMessage = "failed to submit registration request"
-
-    // Submits the form's data to the backend for processing
-    function submit(e: SubmitEvent) {
-        submissionError = null // resetting the submission error text
-
-        // lets the submit be handled asynchronously
-        const submitAsync = async function() {
-            if (e.target === null) { // if submit triggered without event data
-                console.log(errorPrefix, "submit triggered without event data")
-                throw NewError(genericErrorMessage)
-            }
-
-            // converting form data into a processable input
-            const formData = new FormData(e.target as HTMLFormElement)
-            const data = new URLSearchParams()
-            for (let field of formData) {
-                const [key, value] = field
-                
-                if (value instanceof File) { // if data is a file
-                    // converts image files into smaller versions so they can be transfered to the backend
-                    await shrinkImage(value)
-                    .then((encodedImage) => {
-                        data.append(key, encodedImage)
-                    })
-                    .catch((err: CommonError) => {
-                        console.log(errorPrefix, "when shrinking image: ", err.message)
-                        throw NewError(genericErrorMessage)
-                    })
-                    .catch((err: any) => {
-                        console.log(unidentifiedErrorPrefix, "when shrinking image: ", err)
-                        throw NewError(genericErrorMessage)
-                    })
-                } else if (typeof value === "string") { // if text box entry
-                    data.append(key, value)
-                }
-            }
-
-            // sending the registration data to the backend
-            return register(data).then((res) => {
-                if (!res.ok) { // failed to register
-                    res.json()
-                    .then((err: CommonError) => {                      
-                        throw NewError(err.message)
-                    })
-                    .catch((err: any) => {
-                        console.log(errorPrefix, "failed to decode json: ", err)
-                        throw NewError(genericErrorMessage)
-                    })
-                }
-            })
-            .catch((err: any) => {
-                console.log(unidentifiedErrorPrefix, "registration failed")
-                throw err
-            })
-        }
-
-        // stops user input during the processing of their registration
-        working = true
-
-        submitAsync()
-        .then(() => {
-            isRegistered = true // play registered animation
-        })
-        .catch((err: CommonError) => {
-            console.log(errorPrefix, err.message)
-            submissionError = err.message // change error message displayed to user
-            working = false // since their was an error allow the user to try submitting the form again
-        })
-        .catch((err: any) => {
-            console.log(unidentifiedErrorPrefix, err)
-            submissionError = genericErrorMessage // change error message displayed to user
-            working = false // since their was an error allow the user to try submitting the form again
-        })
-    }
-
-    // Shrinks an image to a size that can be transfered to the backend
-    function shrinkImage(file: File): Promise<string> {
-        const promise = new Promise<string>((res, rej) => {
-            if(!file.type.match(/image.*/)) { // ensure it's an image
-                console.log(errorPrefix, "file was not an image")
-                rej(NewError(genericErrorMessage))
-            }
-            // load the image
-            var reader = new FileReader();
-            reader.onload = function (readerEvent) {
-                var image = new Image();
-                image.onload = function () {
-                    // resize the image
-                    var canvas = document.createElement('canvas');
-                    const max_size = 544;
-                    let width = image.width;
-                    let height = image.height;
-
-                    // transform the width and height to below or equal the max size
-                    if (width > height && width > max_size) {
-                        width = max_size;
-                        height *= max_size / width; // keeping the image's proportion
-                    } else if (height > max_size) {
-                        height = max_size;
-                        width *= max_size / height; // keeping the image's proportion
-                    }
-
-                    // resize image
-                    canvas.width = width;
-                    canvas.height = height;
-                    canvas.getContext('2d')?.drawImage(image, 0, 0, width, height);
-
-                    // encode it as a base64 encoded png
-                    let encoded = canvas.toDataURL("image/jpeg")
-                    console.log("encoded data: ", encoded)
-
-                    // return encoded out of promise
-                    res(encoded.replace('data:', '').replace(/^.+,/, ''));
-                }
-
-                if (typeof readerEvent.target?.result == 'string') {
-                    image.src = readerEvent.target.result; // set the image
-                } else {
-                    console.log(errorPrefix, "image file did not load correctly")
-                    rej(NewError(genericErrorMessage))
-                }
-            }
-
-            reader.readAsDataURL(file) // input image file into reader
-        })
-
-        return promise
-    }
-
-    // Submits a registration request to the backend
-    function register(data: URLSearchParams): Promise<Response> {
-        // default registration request
-        let request: RegistrationRequest = {
-            first_name: undefined,
-            last_name: undefined,
-            email: undefined,
-            phone_no: undefined,
-            proof_of_identification: undefined,
-            fingerprint: undefined,
-        };
-
-        // fills in each element of the request based on the form data
-        data.forEach((value, key) => {
-            switch (key) {
-                case "firstname": {
-                    request.first_name = value
-                    break;
-                }
-                case "surname": {
-                    request.last_name = value
-                    break;
-                }
-                case "email": {
-                    request.email = value
-                    break;
-                }
-                case "telephone": {
-                    request.phone_no = value
-                    break;
-                }
-                case "identification": {
-                    request.proof_of_identification = value
-                    break;
-                }
-                case "fingerprint": {
-                    request.fingerprint = value
-                    break;
-                }
-                default: {
-                    console.log(errorPrefix, "form contained unexpected data")
-                    throw NewError(genericErrorMessage)
-                }
-            }
-        })
-
-        // checks all the different attributes are filled
-        if (!validateRegistrationRequest(request)) {
-            throw NewError("missing data in registration")
-        }
-
-        // perform registration request to backend
-        return fetch("/api/register", { 
-            method:"POST", 
-            body: JSON.stringify(request), 
-            headers: { 'content-type': 'application/json'} ,
-            signal: AbortSignal.timeout(3000),
-        });
-    }
 </script>
 
 <Hero>
@@ -236,7 +65,7 @@
     <!-- div will dissapear if registration animation is playing -->
     <div class:dissapear={isRegistered}>
         <!-- registration form -->
-        <form class="form card" on:submit|preventDefault={(e => submit(e))}>
+        <form class="form card" method="POST" action="?/register" on:submit={() => working = true}>
 
             <!-- card detail elements -->
             <span class="circle-one"/>
@@ -252,14 +81,16 @@
                 <TextInput name="telephone" type="tel" label="Telephone No" required style="width: 250px;" working={working}/>
             </fieldset>
 
+            <Option name="location" options={options} label="Local Authority" working={working}/>
+
             <!-- file inputs -->
             <FileInput label="Proof of Identification" required name="identification" bind:identificationFiles accept=".png,.jpeg,.jpg" style="padding: 20px; padding-left: 50px; padding-right: 50px;" working={working}/>
             <FileInput label="Fingerprint" required name="fingerprint" bind:fingerprintFiles accept=".png,.jpeg,.jpg"style="padding: 20px; padding-left: 50px; padding-right: 50px;" working={working}/>
             <button class="button button-background-color-primary color-text-inverted" type="submit">Register</button>
 
             <!-- error message displayed to user -->
-            {#if submissionError}
-                <span class="background-color-danger" style="padding-top: 10px;">{submissionError}</span>
+            {#if form?.error}
+                <span class="error" style="width: 250px;">{form?.error}</span>
             {/if}
         </form>
     </div>
@@ -327,8 +158,5 @@
                 padding-right: 30px;
             }
         }
-    
     }
-
-    
 </style>

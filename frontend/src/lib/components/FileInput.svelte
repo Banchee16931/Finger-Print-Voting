@@ -1,5 +1,6 @@
 <script lang="ts">
     import Symbol from "./Symbol.svelte";
+    import { NewError, errorPrefix, unidentifiedErrorPrefix, type CommonError } from "../types/CommonError"
 
     // Defines how it would be submitted to a <form> element. This will act as this inputs id
     export let name: string;
@@ -7,8 +8,10 @@
     // Text above the file input to describe what it is to the user
     export let label: string | null = null
 
+    let fileStrings: string[] | null = null;
+
     // Bind to this to get the files that have been selected
-    export let files: FileList | null = null
+    let files: FileList | null = null
 
     // Set this to allow the user to upload more than one file
     export let multiple: boolean = false;
@@ -101,10 +104,93 @@
         return text.replaceAll(/,\s*/g, ", ")
     }
 
+    
+    // Shrinks an image to a size that can be transfered to the backend
+    function shrinkImage(file: File): Promise<string> {
+        const promise = new Promise<string>((res, rej) => {
+            if(!file.type.match(/image.*/)) { // ensure it's an image
+                console.log(errorPrefix, "file was not an image")
+                rej(NewError("failed to shrink image"))
+            }
+            // load the image
+            var reader = new FileReader();
+            reader.onload = function (readerEvent) {
+                var image = new Image();
+                image.onload = function () {
+                    // resize the image
+                    var canvas = document.createElement('canvas');
+                    const max_size = 500;
+                    let width = image.width;
+                    let height = image.height;
+
+                    // transform the width and height to below or equal the max size
+                    if (width > height && width > max_size) {
+                        height *= max_size / width; // keeping the image's proportion
+                        width = max_size;
+                    } else if (height > max_size) {
+                        width *= max_size / height; // keeping the image's proportion
+                        height = max_size;
+                    }
+
+                    // resize image
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d')?.drawImage(image, 0, 0, width, height);
+
+                    // encode it as a base64 encoded png
+                    let encoded = canvas.toDataURL("image/jpeg")
+                    console.log("encoded data: ", encoded)
+
+                    // return encoded out of promise
+                    res(encoded);
+                }
+
+                if (typeof readerEvent.target?.result == 'string') {
+                    image.src = readerEvent.target.result; // set the image
+                } else {
+                    console.log(errorPrefix, "image file did not load correctly")
+                    rej(NewError("failed to shrink image"))
+                }
+            }
+
+            reader.readAsDataURL(file) // input image file into reader
+        })
+
+        return promise
+    }
+
     // Resets the failureMessage when the data changes
     function change() {
         failureMessage = null
     }
+
+    $: if (files) {
+        fileStrings = []
+        Array.from(files).forEach((file) => {
+            // converts image files into smaller versions so they can be transfered to the backend
+            shrinkImage(file)
+            .then((shrunkenImage) => {
+                if (fileStrings) {
+                    console.log(shrunkenImage)
+                    fileStrings.push(shrunkenImage)
+                    value = fileStrings?.join(",")
+                }
+            })
+            .catch((err: CommonError) => {
+                console.log(errorPrefix, "when shrinking image: ", err.message)
+                throw err
+            })
+            .catch((err: any) => {
+                console.log(unidentifiedErrorPrefix, "when shrinking image: ", err)
+                throw NewError(err)
+            })
+        });
+    }
+
+    let value: string | undefined = undefined
+
+
+    $: console.log("value: ", value)
 </script>
 
 <!--
@@ -169,7 +255,6 @@
         <!-- input that stores the files, has been made invisible for customisation reasons -->
         <input
             id={name}
-            name={name}
             type="file"
             accept={accept}
             bind:files
@@ -183,7 +268,20 @@
             on:keydown
             on:keyup
             on:keypress
-            disabled={working}
+            />
+        <input
+            name={name}
+            type="text"
+            value={value}
+            {...$$restProps}
+            on:change={change}
+            on:dragenter
+            on:dragover
+            on:dragleave
+            on:click
+            on:keydown
+            on:keyup
+            on:keypress
             />
     </div>
     <!-- message that shows when there has been an issue with the file upload -->
@@ -191,3 +289,4 @@
         <span class="color-danger" style="display: block; padding-top: 5px; width: 410px;">{failureMessage}</span>
     {/if}
 </div>
+

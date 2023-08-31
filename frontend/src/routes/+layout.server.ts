@@ -1,7 +1,9 @@
 import type { LayoutServerLoad } from './$types';
 import { user } from "$lib/auth";
 import type { UserData, UserDetails } from '$lib/types';
-import type { ServerLoadEvent } from '@sveltejs/kit';
+import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
+
+let oldUser: UserData | null = null
 
 export const load = (async (e: ServerLoadEvent) => {
     let authorization = e.cookies.get("session")
@@ -45,6 +47,13 @@ export const load = (async (e: ServerLoadEvent) => {
             username: "",
         }
     }
+
+    if (oldUser?.level !== null && userData.level == null) {
+        oldUser = userData
+        throw redirect(307, "/")
+    }
+
+    oldUser = userData
 
     return {
         user: userData

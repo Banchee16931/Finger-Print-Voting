@@ -6,4 +6,5 @@ export type Registrant = {
 	phone_no: string
 	fingerprint: string
 	proof_of_identity: string
+    location: string
 }

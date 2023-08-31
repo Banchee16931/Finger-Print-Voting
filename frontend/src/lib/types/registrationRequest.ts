@@ -3,18 +3,20 @@ export type RegistrationRequest = {
     last_name: string | undefined,
     email: string | undefined,
     phone_no: string | undefined,
-    proof_of_identification: string | undefined,
+    proof_of_identity: string | undefined,
     fingerprint: string | undefined,
+    location: string | undefined
 }
 
 export const validateRegistrationRequest = function(req: RegistrationRequest) {
-    if (req.email === null 
-    || req.first_name === null
-    || req.last_name === null
-    || req.email === null
-    || req.phone_no === null
-    || req.proof_of_identification === null
-    || req.fingerprint === null) {
+    if (req.email === undefined 
+    || req.first_name === undefined
+    || req.last_name === undefined
+    || req.email === undefined
+    || req.phone_no === undefined
+    || req.proof_of_identity === undefined
+    || req.fingerprint === undefined
+    || req.location === undefined) {
         return false
     }
 
