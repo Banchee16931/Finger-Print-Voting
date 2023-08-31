@@ -8,7 +8,7 @@ let electionCount = 0;
 
 export const POST: RequestHandler = async (e) => {
     let req = e.request
-    
+
     let authHeader = req.headers.get("Autherization")
 
     if (!authHeader || Authority(authHeader) !== "admin") {
@@ -24,6 +24,7 @@ export const POST: RequestHandler = async (e) => {
             first_name: candidate.first_name,
             last_name: candidate.last_name,
             party: candidate.party,
+            party_colour: candidate.party_colour,
             photo: candidate.photo
         }
         candidates.push(newCandidate)

@@ -4,5 +4,6 @@ export type Result = {
 	first_name: string
 	last_name: string
 	party: string
+	party_colour: string
 	votes: number   
 }
