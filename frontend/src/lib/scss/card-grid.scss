@@ -23,5 +23,11 @@
     grid-gap: $general-padding;
     .card {
         width: 100%;
+        .content {
+            grid-template-areas:
+            'title right'
+            'subtitle subtitle';
+            width: 90%
+        }
     }
 }

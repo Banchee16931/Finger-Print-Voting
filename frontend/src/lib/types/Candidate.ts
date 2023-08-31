@@ -14,3 +14,11 @@ export type CandidateRequest = {
 	party_colour: string;
 	photo:       string;
 }
+
+export type CandidateVotes = {
+	first_name: string
+	last_name: string
+	party: string
+	party_colour: string
+	votes: number 
+}
