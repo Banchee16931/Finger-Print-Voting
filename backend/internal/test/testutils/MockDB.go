@@ -20,8 +20,8 @@ func (client *MockDB) GetElections() ([]types.Election, error) {
 	return call.Get(0).([]types.Election), call.Error(1)
 }
 
-func (client *MockDB) GetCandidates() ([]types.Candidate, error) {
-	call := client.Called()
+func (client *MockDB) GetCandidates(electionID int) ([]types.Candidate, error) {
+	call := client.Called(electionID)
 	return call.Get(0).([]types.Candidate), call.Error(0)
 }
 

@@ -1,17 +1,15 @@
 package types
 
-import "time"
-
 type ElectionRequest struct {
-	Start      time.Time          `json:"start"`
-	End        time.Time          `json:"end"`
+	Start      string             `json:"start"`
+	End        string             `json:"end"`
 	Location   string             `json:"location"`
 	Candidates []CandidateRequest `json:"candidates"`
 }
 
 type Election struct {
-	ElectionID int       `json:"election_id"` // PK
-	Start      time.Time `json:"start"`
-	End        time.Time `json:"end"`
-	Location   string    `json:"location"`
+	ElectionID int    `json:"election_id"` // PK
+	Start      string `json:"start"`
+	End        string `json:"end"`
+	Location   string `json:"location"`
 }

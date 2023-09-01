@@ -20,11 +20,11 @@ func (client *Client) StoreUser(user types.User) error {
 }
 
 func (client *Client) StoreVoter(voter types.Voter) error {
-	return cerr.ErrUnimplemented
+	return cerr.ErrUnimplemented // store user AND voter
 }
 
 func (client *Client) GetVoter(username string) (types.Voter, error) {
-	return types.Voter{}, cerr.ErrUnimplemented
+	return types.Voter{}, cerr.ErrUnimplemented // get user AND voter
 }
 
 func (client *Client) GetUser(username string) (types.User, error) {
