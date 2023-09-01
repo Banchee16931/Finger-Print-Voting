@@ -44,6 +44,6 @@ func (client *Client) GetUser(username string) (types.User, error) {
 	return user, nil
 }
 
-func (client *Client) DeleteVoter(voter types.Voter) error {
+func (client *Client) DeleteVoter(username string) error {
 	return cerr.ErrUnimplemented
 }

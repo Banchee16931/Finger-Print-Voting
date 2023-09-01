@@ -7,7 +7,7 @@ type Database interface {
 	StoreVoter(voter types.Voter) error
 	GetVoter(username string) (types.Voter, error)
 	GetUser(username string) (types.User, error)
-	DeleteVoter(voter types.Voter) error
+	DeleteVoter(voter string) error
 
 	StoreElection(election types.ElectionRequest) error
 	GetElections() ([]types.Election, error)

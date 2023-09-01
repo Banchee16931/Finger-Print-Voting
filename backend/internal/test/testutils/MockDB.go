@@ -85,8 +85,8 @@ func (client *MockDB) GetUser(username string) (types.User, error) {
 	return call.Get(0).(types.User), call.Error(1)
 }
 
-func (client *MockDB) DeleteVoter(voter types.Voter) error {
-	call := client.Called(voter)
+func (client *MockDB) DeleteVoter(username string) error {
+	call := client.Called(username)
 	return call.Error(0)
 }
 
