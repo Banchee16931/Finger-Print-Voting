@@ -5,7 +5,7 @@ import (
 	"finger-print-voting-backend/internal/types"
 )
 
-func (client *Client) StoreResult(result types.Result) error {
+func (client *Client) StoreResult(result types.ResultRequest) error {
 	return cerr.ErrUnimplemented
 }
 

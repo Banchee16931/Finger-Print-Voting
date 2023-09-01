@@ -10,7 +10,7 @@ type MockDB struct {
 	mock.Mock
 }
 
-func (client *MockDB) StoreElection(election types.Election) error {
+func (client *MockDB) StoreElection(election types.ElectionRequest) error {
 	call := client.Called(election)
 	return call.Error(0)
 }
@@ -18,6 +18,11 @@ func (client *MockDB) StoreElection(election types.Election) error {
 func (client *MockDB) GetElections() ([]types.Election, error) {
 	call := client.Called()
 	return call.Get(0).([]types.Election), call.Error(1)
+}
+
+func (client *MockDB) GetCandidates() ([]types.Candidate, error) {
+	call := client.Called()
+	return call.Get(0).([]types.Candidate), call.Error(0)
 }
 
 func (client *MockDB) DeleteCandidates(electionID int) error {
@@ -40,7 +45,7 @@ func (client *MockDB) DeleteRegistrant(registrantID int) error {
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreResult(result types.Result) error {
+func (client *MockDB) StoreResult(result types.ResultRequest) error {
 	call := client.Called(result)
 	return call.Error(0)
 }
