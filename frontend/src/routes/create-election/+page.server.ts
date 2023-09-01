@@ -104,7 +104,7 @@ export const actions: Actions = {
         let failure: string | null = null
         let failureStatus: number = 500
 
-        await e.fetch("/api/election", {
+        await e.fetch("/api/elections", {
             method: "POST",
             body: JSON.stringify(newElection)
         }).then(async (res) => {

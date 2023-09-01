@@ -1,6 +1,127 @@
-import type { Registrant, UserStore, Election } from "$lib/types";
+import type { Registrant, UserStore, Election, ElectionState, Vote } from "$lib/types";
 
 export let elections: Election[] = []
+
+export let votes: Vote[] = []
+
+export let electionState: ElectionState[] = [
+    {
+        election_id: 0,
+        start: "2023-10-2",
+        end: "2023-10-3",
+        location: "Bedfordshire",
+        result: [
+            {
+                first_name: "Hi",
+                last_name: "Bye",
+                party: "Labour",
+                party_colour: "#ff0000",
+                votes: 15
+            },
+            {
+                first_name: "Other",
+                last_name: "Guy",
+                party: "Conservitive",
+                party_colour: "#0000ff",
+                votes: 5
+            },
+            {
+                first_name: "Green",
+                last_name: "Guy",
+                party: "Green",
+                party_colour: "#00ff00",
+                votes: 2
+            }
+        ]
+    },
+    {
+        election_id: 2,
+        start: "2022-10-2",
+        end: "2022-10-3",
+        location: "Hertfordshire",
+        result: [
+            {
+                first_name: "Hi",
+                last_name: "Bye",
+                party: "Labour",
+                party_colour: "#ff0000",
+                votes: 9
+            },
+            {
+                first_name: "Other",
+                last_name: "Guy",
+                party: "Conservitive",
+                party_colour: "#0000ff",
+                votes: 1
+            },
+            {
+                first_name: "Green",
+                last_name: "Guy",
+                party: "Green",
+                party_colour: "#00ff00",
+                votes: 5
+            }
+        ]
+    },
+    {
+        election_id: 1,
+        start: "2022-4-2",
+        end: "2023-4-3",
+        location: "Bedfordshire",
+        result: [
+            {
+                first_name: "Hi",
+                last_name: "Bye",
+                party: "Independant",
+                party_colour: "#eeeeee",
+                votes: 2
+            },
+            {
+                first_name: "Other",
+                last_name: "Guy",
+                party: "Conservitive",
+                party_colour: "#0000ff",
+                votes: 69
+            },
+            {
+                first_name: "Green",
+                last_name: "Guy",
+                party: "Green",
+                party_colour: "#00ff00",
+                votes: 15
+            }
+        ]
+    },
+    {
+        election_id: 3,
+        start: "2023-8-31",
+        end: "2023-9-1",
+        location: "York",
+        result: [
+            {
+                first_name: "Hi",
+                last_name: "Bye",
+                party: "Independant",
+                party_colour: "#eeeeee",
+                votes: 2
+            },
+            {
+                first_name: "Other",
+                last_name: "Guy",
+                party: "Conservitive",
+                party_colour: "#0000ff",
+                votes: 69
+            },
+            {
+                first_name: "Green",
+                last_name: "Guy",
+                party: "Green",
+                party_colour: "#00ff00",
+                votes: 15
+            }
+        ]
+    }
+]
 
 export let users: UserStore[] = []
 

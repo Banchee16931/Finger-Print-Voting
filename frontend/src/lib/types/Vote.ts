@@ -1,5 +1,5 @@
 export type Vote = {
 	username:   string
-	election_i:  number  
+	election_id:  number  
 	candidate_id: number  
 }

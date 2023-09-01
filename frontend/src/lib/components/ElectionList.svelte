@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CandidateVotes, ElectionState } from "$lib/types";
+	import { votes } from "../../routes/api/mock/data";
 	import Card from "./Card.svelte";
 	import CardList from "./CardList.svelte";
 
@@ -13,6 +14,15 @@
 
         return count
     }
+
+    function percentage(voteCount: number, result: CandidateVotes[]) {
+        let resultTotal = total(result)
+        if (resultTotal === 0) {
+            return 0
+        }
+
+        return (voteCount / resultTotal * 100).toFixed(2)
+    }
 </script>
 
 <CardList>
@@ -23,11 +33,12 @@
                 <strong>ID:</strong> {election.election_id}<br/>
                 <strong>Date:</strong> {election.start} -> {election.end}<br/>
                 <strong>Result:</strong><br/>
-                <div style="width: 100%; height: 5px; display: flex; flex-direction: row; border: 1px solid var(--outline); z-index: 101;">
+                <div style="width: 100%; height: 5px; display: flex; flex-direction: row; 
+                border: 1px solid var(--outline); background-color:transparent; z-index: 101;">
                     {#each election.result.sort((prev, current) => {
                         return current.votes - prev.votes
                     }) as result}
-                        <div style={`width: ${100 * result.votes / total(election.result)}%; height: 100%; z-index: 101; background: ${result.party_colour};`}/>
+                        <div style={`width: ${percentage(result.votes, election.result)}%; height: 100%; z-index: 101; background: ${result.party_colour};`}/>
                     {/each}
                 </div>
                 <table style="margin-top: 10px;">
@@ -53,7 +64,7 @@
                                 {result.party}
                             </td>
                             <td style="padding-left: 30px;">
-                                {result.votes} : {(result.votes / total(election.result) * 100).toFixed(2)}%
+                                {result.votes} : {percentage(result.votes, election.result)}%
                             </td>
                         </tr>
                     {/each}
