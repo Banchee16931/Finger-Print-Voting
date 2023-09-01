@@ -26,6 +26,7 @@
 
     .bg {
         position: fixed;
+        overflow: auto;
         z-index: 1000;
         top: 0;
         left: 0;
@@ -59,6 +60,7 @@
         margin: 0;
         background: white;
         overflow: clip;
+        margin-top: 75px;
     }
 
     .xButton {

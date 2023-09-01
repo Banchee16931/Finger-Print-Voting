@@ -1,3 +1,8 @@
+.stickyHero {
+    position: sticky;
+    top: 0;
+}
+
 .hero {
     @include animated;
 

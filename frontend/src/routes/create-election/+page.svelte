@@ -4,6 +4,7 @@
     import Option from '$lib/components/Option.svelte';
     import CardGrid from "$lib/components/CardGrid.svelte";
     import Dialog from "$lib/components/Dialog.svelte";
+    import CandidateCard from "$lib/components/CandidateCard.svelte";
 
     export let form;
 
@@ -124,18 +125,7 @@
 
 <Dialog bind:hide={hideNewCandidate} title="Create New Candidate" style="border-radius: 10px;">
     <Card>
-        <div class="candidateCard card" style="height: 150px; width: 330px; margin-left: auto; margin-right: auto;">
-            {#if beingCreatedCandidate.photo !== ""}
-                <img src={beingCreatedCandidate.photo} alt={`Photo of ${beingCreatedCandidate.first_name} ${beingCreatedCandidate.last_name}`} style="background: white; width: 80px; height: 80px;"/>
-            {:else}
-                <div style="background: white; width: 80px; height: 80px;"/>
-            {/if}
-            <div style="margin-top: 5px;">
-                <strong>{beingCreatedCandidate.first_name} {beingCreatedCandidate.last_name}</strong>
-                <div>{beingCreatedCandidate.party}</div>
-            </div>
-            <div class="colourHighlight" style={`background: ${beingCreatedCandidate.party_colour}`}/>
-        </div>
+        <CandidateCard candidate={beingCreatedCandidate}  style="width: 330px; margin-left: auto; margin-right: auto;"/>
         <fieldset class = "multi-input" style="margin-top: 20px;">
             <TextInput name="first_name" bind:value={beingCreatedCandidate.first_name} label="First Name" required type="text" style="width: 250px;"/>
             <TextInput name="last_name" bind:value={beingCreatedCandidate.last_name} label="Last Name" required type="text" style="width: 250px;"/>
@@ -145,7 +135,7 @@
                 <option value={party}/>
             {/each}
         </datalist>
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%;">
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; width: 100%; maring-top: 0;">
             <TextInput bind:value={beingCreatedCandidate.party} id="party" name="party" list="partylist" on:change={
                 () => {
                     let newColour = partyToColour.get(beingCreatedCandidate.party)
@@ -164,19 +154,14 @@
     </Card>
 </Dialog>
 
-<div class="center-container spaced-container">
+<div class="center-container spaced-container" style="margin-bottom: 30px;">
     <h3>Candidates</h3>
     <CardGrid style="Width: 100%; margin-top: 10px;">
-        {#each candidates as candidate}
-            <div class="candidateCard card">
-                <img src={candidate.photo} alt={`Photo of ${candidate.first_name} ${candidate.last_name}`} style="background: white; width: 80px; height: 80px;"/>
-                <div style="margin-top: 5px;">
-                    <strong>{candidate.first_name} {candidate.last_name}</strong>
-                    <div>{candidate.party}</div>
-                </div>
-                <div class="colourHighlight" style={`background: ${candidate.party_colour}`}/>
-                <button class="xButton" type="button" style="position: absolute; top: 5px; right: 10px; font-size: 20px;">X</button>
-            </div>
+        {#each candidates as candidate, id}
+            <CandidateCard candidate={candidate} windowSizeReactive id={id} closable on:close={() => {
+                    candidates.splice(id, 1)
+                    candidates = candidates
+                }}/>
         {/each}
 
         <button class="background-color-background card addNewCard" on:click={() => NewCandidate()}>+</button>
@@ -208,14 +193,6 @@
 <style lang="scss">
     @use "sass:color";
     @import "../../lib/scss/mixins";
-
-    .colourHighlight {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-    }
     
     .button {
         font-size: 1rem;
@@ -229,38 +206,15 @@
         align-items: center;
         justify-content: center;
         opacity: 50%;
-        height: 180px;
+        height: 100px;
 
+        @include lg-and-up {
+            height: 180px;
+        }
     }
 
     .addNewCard:hover {
         font-size: 38px;
-    }
-
-    .xButton {
-        padding: 0;
-        margin: 0;
-        background-color: transparent;
-        color: var(--text);
-        border: none;
-    }
-
-    .xButton:hover {
-        scale: 1.1;
-    }
-
-    .candidateCard {
-        background-color: var(--background-tertiary);
-        border: 1px solid var(--outline);
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        height: 180px;
-
-        @include lg-and-up {
-            flex-direction: column;
-            gap: 0;
-        }
     }
 
     .success {
