@@ -43,4 +43,12 @@ func main() {
 	log.Println(elections)
 	candidate, _ := db.GetCandidates(elections[0].ElectionID)
 	log.Println(candidate)
+
+	user := types.User{Username: "bancheeban", Password: "pass1", Admin: false, FirstName: "Callum", LastName: "Stone"}
+	voter := types.Voter{User: user, PhoneNo: "01438 872874", Email: "email@email.email", Fingerprint: "print", Location: "Here"}
+	err = db.StoreVoter(voter)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(db.GetVoter("bancheeban"))
 }
