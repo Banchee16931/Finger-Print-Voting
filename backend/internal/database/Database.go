@@ -11,7 +11,7 @@ type Database interface {
 
 	StoreElection(election types.ElectionRequest) error
 	GetElections() ([]types.Election, error)
-	GetCandidates() ([]types.Candidate, error)
+	GetCandidates(electionID int) ([]types.Candidate, error)
 	DeleteCandidates(electionID int) error
 
 	StoreVote(vote types.Vote) error

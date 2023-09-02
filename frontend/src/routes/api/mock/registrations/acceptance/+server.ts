@@ -1,7 +1,7 @@
-import type { Registrant, UserAcceptanceRequest, UserStore } from "$lib/types"
+import type { Registrant, UserAcceptanceRequest, UserStore, Voter } from "$lib/types"
 import { NewError } from '$lib/types/CommonError';
 import { Authority } from '../../handleAuth';
-import { registrations, users } from '../../data';
+import { registrations, users, voters } from '../../data';
 import type { RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async (e) => {
@@ -36,7 +36,19 @@ export const POST: RequestHandler = async (e) => {
             first_name: reg.first_name,
             last_name: reg.last_name,
         }
+
+        let voter: Voter = {
+            username: userAcceptance.username,
+            password: userAcceptance.password,
+            first_name: reg.first_name,
+            last_name: reg.last_name,
+            phone_no: reg.phone_no,
+            email: reg.email,
+            fingerprint: reg.fingerprint,
+            location: reg.location
+        }
         users.push(newUser)
+        voters.push(voter)
     }
 
     registrations.splice(removeIndex, 1)

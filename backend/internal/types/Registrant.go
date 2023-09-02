@@ -8,4 +8,5 @@ type Registrant struct {
 	PhoneNo         string `json:"phone_no"`
 	Fingerprint     string `json:"fingerprint"`
 	ProofOfIdentity string `json:"proof_of_identity"`
+	Location        string `json:"location"`
 }

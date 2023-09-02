@@ -64,6 +64,8 @@
         }
 
         return false
+    }).sort((prev, current) => {
+        return new Date(current.start.replace("-", ",")).getTime() - new Date(prev.start.replace("-", ",")).getTime()
     })
 
     $: completedElections = filteredElections.filter((election) => {
@@ -73,6 +75,8 @@
         }
 
         return false
+    }).sort((prev, current) => {
+        return new Date(current.end.replace("-", ",")).getTime() - new Date(prev.end.replace("-", ",")).getTime()
     })
 </script>
 
