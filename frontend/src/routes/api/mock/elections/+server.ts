@@ -4,7 +4,7 @@ import { elections, electionState, votes } from "../data"
 import { Authority } from '../handleAuth';
 import { NewError } from '$lib/types/CommonError';
 
-let electionCount = 4;
+let electionCount = 5;
 
 export const POST: RequestHandler = async (e) => {
     let req = e.request

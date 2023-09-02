@@ -6,87 +6,84 @@
 	import FileInput from "$lib/components/FileInput.svelte";
     import Hero from "$lib/components/Hero.svelte";
 	import TickAnimation from "$lib/components/TickAnimation.svelte";
-	import type { Candidate, Election } from "$lib/types";
+	import type { Candidate } from "$lib/types";
+	import { redirect } from "@sveltejs/kit";
+	import type { ActionData, PageData } from "./$types";
 
-    let election: Election = {
-        election_id: 0,
-        start: "2023-10-2",
-        end: "2023-10-3",
-        location: "Bedfordshire",
-        candidates: [
-            {
-                candidate_id: 0,
-                photo: "",
-                first_name: "Hi",
-                last_name: "Bye",
-                party: "Labour",
-                party_colour: "#ff0000",
-            },
-            {
-                candidate_id: 1,
-                photo: "",
-                first_name: "Other",
-                last_name: "Guy",
-                party: "Conservitive",
-                party_colour: "#0000ff",
-            },
-            {
-                candidate_id: 2,
-                photo: "",
-                first_name: "Green",
-                last_name: "Guy",
-                party: "Green",
-                party_colour: "#00ff00",
-            }
-        ]
-    }
+    export let data: PageData
+    $: election = data.election
 
     let hideVoteDialog = true
 
-    function VoteScreenForCandidate(idx: number) {
-        selectedCandidate = election.candidates[idx]
-        hideVoteDialog = false
-    }
+    let working = false
 
-    function Vote(id: number) {
-        console.log("voted for: ", id)
+     /** @type {import('./$types').ActionData} */
+     export let form: ActionData;
+
+    $: if (form?.registered !== undefined) {
+        if (form?.registered === false) {
+            working = false
+        }
     }
 
     let selectedCandidate: Candidate;
 
-    let voted = false
+    function VoteScreenForCandidate(idx: number) {
+        if (election) {
+            selectedCandidate = election.candidates[idx]
+            hideVoteDialog = false
+        }
+    }
 
     async function  logout(e: Event) {
         await fetch("/api/delete-authorization", { method: "DELETE" })
         invalidateAll()
+        redirect (307, "/")
     }
 </script>
 
+{#if election}
 <Hero>
-    <h1>
-        Vote
+    <h1 style="margin-bottom: 0;">
+        {election?.location} Election
     </h1>
+    <h2 style="margin-top: 0;">
+        {election?.start.split("-").reverse().join("/")} - {election?.end.split("-").reverse().join("/")}
+    </h2>
+    <p><strong>Election ID: </strong> #{election?.election_id}</p>
     <p>Click on the Candidate you want to vote for</p>
 </Hero>
 
 {#if selectedCandidate}
     <Dialog bind:hide={hideVoteDialog} title="Submit your Vote" style="border-radius: 10px;">
-        <form class="form card" style="margin-top: 0; border-radius: 0;">
+        <form class="form card" method="POST" action="?/vote" on:submit={() => working = true} style="margin-top: 0; border-radius: 0;">
             <span class="circle-one"/>
             <span class="circle-two"/>
             <CandidateCard candidate={selectedCandidate}  style="width: 330px; margin-left: auto; margin-right: auto; margin-bottom: 50px;"/>
-            <FileInput required name="fingerprint" bind:value={selectedCandidate.photo} label="Fingerprint" accept=".png,.jpeg,.jpg" 
-            style="padding: 20px; padding-left: 50px; padding-right: 50px;"/>
+            <FileInput required name="fingerprint" label="Fingerprint" accept=".png,.jpeg,.jpg" 
+                style="padding: 20px; padding-left: 50px; padding-right: 50px;" working={working}/>
+            <input name="election_id" value={election?.election_id} style="display: none;"/>
+            <input name="candidate_id" value={selectedCandidate.candidate_id} style="display: none;"/>
             <button class="button color-text-inverted background-color-primary" style="display: block; margin-left: auto; margin-right: auto;"
-            on:click={() => {
-                Vote(selectedCandidate.candidate_id)
-            }}>Vote</button>
+            type="submit">Vote</button>
         </form>
     </Dialog>
 {/if}
 
 <div class="spaced-container">
-    {#if voted}
+    <!-- error message displayed to user -->
+    {#if form?.error}
+        <span class="inPageError" style="width: 250px;">Error: {form?.error}</span>
+    {/if}
+    <h3>Candidates</h3>
+    <CardGrid style="Width: 100%; margin-top: 10px;">
+        {#each election?.candidates as candidate, idx}
+            <CandidateCard candidate={candidate} windowSizeReactive id={candidate.candidate_id} hoverEffect on:click={() => VoteScreenForCandidate(idx)}/>
+        {/each}
+    </CardGrid>
+</div>
+{:else}
+    <div class="spaced-container">
         <div class="center-container registered-animation">
             <TickAnimation start={true} size="10rem;"/>
             <h1>You have Voted!</h1>
@@ -98,30 +95,26 @@
                 Logout
             </button>
         </div>
-    {/if}
-    <div  class:dissapear={voted}>
-        <h3>Candidates</h3>
-        <CardGrid style="Width: 100%; margin-top: 10px;">
-            {#each election.candidates as candidate, idx}
-                <CandidateCard candidate={candidate} windowSizeReactive id={candidate.candidate_id} hoverEffect on:click={() => VoteScreenForCandidate(idx)}/>
-            {/each}
-        </CardGrid>
     </div>
-</div>
+{/if}
 
 <style lang="scss">
-    // causes an element to fade out
-    @keyframes dissapear {
-        from {
-            opacity: 100%;
-        }
-        to {
-            opacity: 0;
-        }
-    }
+    @use "sass:color";
 
-    .dissapear {
-        animation: dissapear 0.2s ease-in-out forwards;
+    .inPageError {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        border-radius: 5px;
+        z-index: 100;
+        padding: 5px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: color.adjust(#E50000, $lightness: +54%);
+        border: 1px solid color.adjust(red, $lightness: -5%);
+        color: color.adjust(red, $lightness: -5%);
     }
 
     // causes an element to fade in

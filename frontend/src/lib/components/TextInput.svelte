@@ -19,7 +19,7 @@
 
     export let working: boolean = false;
 
-    export let value: string | null = null;
+    export let value: string | number | null = null;
 
     export let disableFocusHighlight: boolean = false
 
