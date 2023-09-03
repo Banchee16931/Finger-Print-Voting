@@ -21,6 +21,11 @@ func (client *MockDB) GetElections() ([]types.Election, error) {
 	return call.Get(0).([]types.Election), call.Error(1)
 }
 
+func (client *MockDB) GetElection(electionID int) (types.Election, error) {
+	call := client.Called(electionID)
+	return call.Get(0).(types.Election), call.Error(1)
+}
+
 func (client *MockDB) GetElectionByLocation(location string) ([]types.Election, error) {
 	call := client.Called(location)
 	return call.Get(0).([]types.Election), call.Error(1)

@@ -220,8 +220,12 @@ func TestClient_DeleteRegistrant(t *testing.T) {
 			// Set up expectations for db.Exec
 			tc.mockExpectation(mock)
 
+			mock.ExpectBegin()
+
+			tx, err := db.Begin()
+
 			// Call the function being tested
-			err = client.DeleteRegistrant(tc.registrantID)
+			err = client.DeleteRegistrant(tx, tc.registrantID)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedError, "Incorrect error type")

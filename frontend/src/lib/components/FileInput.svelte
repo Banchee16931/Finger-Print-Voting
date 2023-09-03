@@ -107,7 +107,9 @@
     
     // Shrinks an image to a size that can be transfered to the backend
     function shrinkImage(file: File): Promise<string> {
+        console.log("shrink image")
         const promise = new Promise<string>((res, rej) => {
+            console.log("in promise")
             if(!file.type.match(/image.*/)) { // ensure it's an image
                 console.log(errorPrefix, "file was not an image")
                 rej(NewError("failed to shrink image"))
@@ -115,8 +117,10 @@
             // load the image
             var reader = new FileReader();
             reader.onload = function (readerEvent) {
+                console.log("in reader")
                 var image = new Image();
                 image.onload = function () {
+                    console.log("in image load")
                     // resize the image
                     var canvas = document.createElement('canvas');
                     const max_size = 500;
@@ -142,11 +146,15 @@
                     console.log("encoded data: ", encoded)
 
                     // return encoded out of promise
+                    console.log("encoded image")
+                    console.log(encoded)
                     res(encoded);
                 }
 
                 if (typeof readerEvent.target?.result == 'string') {
                     image.src = readerEvent.target.result; // set the image
+
+                    res(readerEvent.target?.result) // if image is too small to be loaded just use input
                 } else {
                     console.log(errorPrefix, "image file did not load correctly")
                     rej(NewError("failed to shrink image"))
@@ -171,16 +179,17 @@
             shrinkImage(file)
             .then((shrunkenImage) => {
                 if (fileStrings) {
-                    console.log(shrunkenImage)
                     fileStrings.push(shrunkenImage)
                     value = fileStrings?.join(",")
                 }
             })
             .catch((err: CommonError) => {
+                console.log("err")
                 console.log(errorPrefix, "when shrinking image: ", err.message)
                 throw err
             })
             .catch((err: any) => {
+                console.log("err")
                 console.log(unidentifiedErrorPrefix, "when shrinking image: ", err)
                 throw NewError(err)
             })

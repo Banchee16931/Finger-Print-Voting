@@ -276,8 +276,11 @@ func TestClient_StoreUser(t *testing.T) {
 				WithArgs(tc.user.Username, tc.user.Password, tc.user.Admin, tc.user.FirstName, tc.user.LastName).
 				WillReturnResult(tc.mockExecResult)
 
+			mock.ExpectBegin()
+			tx, err := db.Begin()
+
 			// Call the function being tested
-			err = client.StoreUser(tc.user)
+			err = client.StoreUser(tx, tc.user)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedError, "Incorrect error type")

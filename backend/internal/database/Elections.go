@@ -85,6 +85,18 @@ func StoreCandidates(tx *sql.Tx, electionID int, candidates []types.CandidateReq
 	return nil
 }
 
+func (client *Client) GetElection(electionID int) (types.Election, error) {
+	log.Printf("Getting election: %d", electionID)
+	election := types.Election{}
+	err := client.db.QueryRow(`SELECT election_id, election_start, election_end, authority_location FROM elections WHERE election_id=$1;`,
+		electionID).Scan(&election.ElectionID, &election.Start, &election.End, &election.Location)
+	if err != nil {
+		return types.Election{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+	}
+
+	return election, nil
+}
+
 func (client *Client) GetElections() ([]types.Election, error) {
 	log.Printf("Getting all elections")
 

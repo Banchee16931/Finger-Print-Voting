@@ -14,6 +14,7 @@ type Database interface {
 
 	StoreElection(election types.ElectionRequest) error
 	GetElections() ([]types.Election, error)
+	GetElection(electionID int) (types.Election, error)
 	GetElectionByLocation(location string) ([]types.Election, error)
 	GetCandidates(electionID int) ([]types.Candidate, error)
 	DeleteCandidates(electionID int) error

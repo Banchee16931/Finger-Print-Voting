@@ -1,7 +1,10 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"finger-print-voting-backend/internal/fingerprints"
 	"finger-print-voting-backend/internal/types"
 	"fmt"
 	"log"
@@ -9,7 +12,7 @@ import (
 	"time"
 )
 
-func (srv *Server) HandlePostElection(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) HandlePostVote(w http.ResponseWriter, r *http.Request) {
 	// get user account
 	userCtx := r.Context().Value(types.UserContext)
 
@@ -19,9 +22,15 @@ func (srv *Server) HandlePostElection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	voter, err := srv.db.GetVoter(user.Username)
+	if err != nil {
+		HTTPError(w, http.StatusForbidden, fmt.Errorf("user is not a voter"))
+		return
+	}
+
 	var voteReq types.VoteRequest
 
-	err := json.NewDecoder(r.Body).Decode(&voteReq)
+	err = json.NewDecoder(r.Body).Decode(&voteReq)
 	if HTTPError(w, http.StatusBadRequest, err) {
 		return
 	}
@@ -30,35 +39,62 @@ func (srv *Server) HandlePostElection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	elections, statusCode, err := ElectionsFromUser(srv, user.Username)
-	if HTTPError(w, statusCode, err) {
+	election, err := srv.db.GetElection(voteReq.ElectionID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			HTTPError(w, http.StatusForbidden, fmt.Errorf("election doesn't exist"))
+			return
+		}
+
+		HTTPError(w, http.StatusForbidden, err)
+		return
+	}
+	if HTTPError(w, http.StatusInternalServerError, err) {
+		return
+	}
+
+	if election.Location != voter.Location {
+		HTTPError(w, http.StatusBadRequest, fmt.Errorf("user is not from this elections location"))
+		return
+	}
+
+	startDate, err := types.StringToDate(election.Start)
+	if HTTPError(w, http.StatusInternalServerError, err) {
+		return
+	}
+
+	endDate, err := types.StringToDate(election.End)
+	if HTTPError(w, http.StatusInternalServerError, err) {
 		return
 	}
 
 	now := time.Now()
 
-	// filtering out old elections
-	existingElections := []types.Election{}
-	for i := range electionsWithSameLocation {
-		endDate, err := types.StringToDate(electionsWithSameLocation[i].End)
-		if HTTPError(w, http.StatusInternalServerError, err) {
-			return
-		}
-
-		if endDate.Unix() > now.Unix() {
-			existingElections = append(existingElections, electionsWithSameLocation[i])
-		}
-	}
-
-	// checking if any elections with that location are still ongoing
-	if len(existingElections) > 0 {
-		HTTPError(w, http.StatusBadRequest, fmt.Errorf("election for that location already exists"))
+	if startDate.Unix() > now.Unix() {
+		HTTPError(w, http.StatusBadRequest, fmt.Errorf("election has yet to begin"))
 		return
 	}
 
-	if err = srv.db.StoreElection(voteReq); HTTPError(w, http.StatusInternalServerError, err) {
+	if endDate.Unix() < now.Unix() {
+		HTTPError(w, http.StatusBadRequest, fmt.Errorf("election has already passed"))
 		return
 	}
+
+	matchingFingerprint, err := fingerprints.CompareBase64Fingerprints(voter.Fingerprint, voteReq.Fingerprint)
+	if HTTPError(w, http.StatusBadRequest, err) {
+		return
+	}
+
+	if !matchingFingerprint {
+		HTTPError(w, http.StatusBadRequest, fmt.Errorf("given fingerprint is not registered to this account"))
+		return
+	}
+
+	srv.db.StoreVote(types.Vote{
+		ElectionID:  voteReq.ElectionID,
+		CandidateID: voteReq.CandidateID,
+		Username:    user.Username,
+	})
 
 	log.Println("Stored Election")
 
