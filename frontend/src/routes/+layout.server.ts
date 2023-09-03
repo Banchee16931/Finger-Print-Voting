@@ -17,7 +17,7 @@ export const load = (async (e: ServerLoadEvent) => {
     let userRes: UserDetails | null = null
     if (authorization) {
         console.log("session changes")
-        let res = await e.fetch("/api/user", { method: "GET" })
+        let res = await e.fetch("/api/users", { method: "GET" })
         if (res.ok) {
             console.log("ok")
             userRes = await res.json()
@@ -50,7 +50,7 @@ export const load = (async (e: ServerLoadEvent) => {
 
     if (oldUser?.level !== null && userData.level == null) {
         oldUser = userData
-        throw redirect(307, "/")
+        throw redirect(303, "/")
     }
 
     oldUser = userData

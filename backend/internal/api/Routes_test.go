@@ -25,7 +25,7 @@ func TestRoutes(t *testing.T) {
 		},
 		{
 			Method: http.MethodGet,
-			Path:   "/user",
+			Path:   "/users",
 		},
 	}
 

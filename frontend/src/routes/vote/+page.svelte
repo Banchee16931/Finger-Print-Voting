@@ -38,7 +38,7 @@
     async function  logout(e: Event) {
         await fetch("/api/delete-authorization", { method: "DELETE" })
         invalidateAll()
-        redirect (307, "/")
+        redirect (303, "/")
     }
 </script>
 

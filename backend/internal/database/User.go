@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func (client *Client) StoreUser(user types.User) error {
+func (client *Client) StoreUser(tx *sql.Tx, user types.User) error {
 	_, err := client.db.Exec(`INSERT INTO users (username, encrypted_password, is_admin, first_name, last_name)
     VALUES ($1, $2, $3, $4, $5);`, user.Username, user.Password, user.Admin, user.FirstName, user.LastName)
 
@@ -19,14 +19,8 @@ func (client *Client) StoreUser(user types.User) error {
 	return nil
 }
 
-func (client *Client) StoreVoter(voter types.Voter) error {
-	tx, err := client.db.Begin()
-
-	if err != nil {
-		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
-	}
-
-	_, err = tx.Exec(`INSERT INTO voter_details (username, phone_no, email, fingerprint, authority_location)
+func (client *Client) StoreVoter(tx *sql.Tx, voter types.Voter) error {
+	_, err := tx.Exec(`INSERT INTO voter_details (username, phone_no, email, fingerprint, authority_location)
 	VALUES ($1, $2, $3, $4, $5);`, voter.User.Username, voter.PhoneNo, voter.Email, voter.Fingerprint, voter.Location)
 
 	if err != nil {
@@ -37,7 +31,7 @@ func (client *Client) StoreVoter(voter types.Voter) error {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
-	err = client.StoreUser(voter.User)
+	err = client.StoreUser(tx, voter.User)
 
 	if err != nil {
 		rollErr := tx.Rollback()

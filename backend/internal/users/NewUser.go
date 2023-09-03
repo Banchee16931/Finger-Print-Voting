@@ -1,8 +1,10 @@
 package users
 
 import (
+	"finger-print-voting-backend/internal/cerr"
 	"finger-print-voting-backend/internal/database"
 	"finger-print-voting-backend/internal/types"
+	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,5 +17,28 @@ func NewUser(db database.Database, user types.User) error {
 
 	user.Password = string(encryptedPassword)
 
-	return db.StoreUser(user)
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	err = db.StoreUser(tx, user)
+	if err != nil {
+		rollErr := tx.Rollback()
+		if rollErr != nil {
+			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
+		}
+		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		rollErr := tx.Rollback()
+		if rollErr != nil {
+			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
+		}
+		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+	}
+
+	return nil
 }

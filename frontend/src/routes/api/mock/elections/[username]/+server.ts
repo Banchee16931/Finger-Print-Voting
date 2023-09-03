@@ -32,7 +32,9 @@ export const GET: RequestHandler = async (e) => {
         return new Response(JSON.stringify(NewError("unregistered voter", {noUserAccount: true})), {status: 400});
     }
 
-    elections.sort((prev, current) => {
+    console.log("voter: ", voter)
+
+    let filteredElections = elections.sort((prev, current) => {
         return new Date(current.start.replace("-", ",")).getTime() - new Date(prev.start.replace("-", ",")).getTime()
     }).filter((election) => {
         if (election.location == voter?.location) {
@@ -42,11 +44,11 @@ export const GET: RequestHandler = async (e) => {
         return false
     })
 
-    if (elections.length === 0) {
+    if (filteredElections.length === 0) {
         return new Response(JSON.stringify(NewError("no running elections for this user")), {status: 404});
     }
 
-    let election = elections[0]
+    let election = filteredElections[0]
 
     return new Response(JSON.stringify(election), { status: 200 });
 }

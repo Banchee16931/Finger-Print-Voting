@@ -1,10 +1,13 @@
 package database
 
-import "finger-print-voting-backend/internal/types"
+import (
+	"database/sql"
+	"finger-print-voting-backend/internal/types"
+)
 
 type Database interface {
-	StoreUser(user types.User) error
-	StoreVoter(voter types.Voter) error
+	StoreUser(tx *sql.Tx, user types.User) error
+	StoreVoter(tx *sql.Tx, voter types.Voter) error
 	GetVoter(username string) (types.Voter, error)
 	GetUser(username string) (types.User, error)
 	DeleteVoter(voter string) error
@@ -20,8 +23,11 @@ type Database interface {
 
 	StoreRegistrant(registrant types.RegistrationRequest) error
 	GetRegistrants() ([]types.Registrant, error)
-	DeleteRegistrant(registrantID int) error
+	GetRegistrant(registrantID int) (types.Registrant, error)
+	DeleteRegistrant(tx *sql.Tx, registrantID int) error
 
 	StoreResult(result types.ResultRequest) error
 	GetResults(electionID int) ([]types.Result, error)
+
+	Begin() (*sql.Tx, error)
 }

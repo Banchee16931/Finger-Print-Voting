@@ -95,7 +95,7 @@ export const actions: Actions = {
         let failure: string | null = null
         let failureStatus: number = 500
 
-        let res = await e.fetch("/api/vote", { 
+        let res = await e.fetch("/api/votes", { 
             method:"POST", 
             body: JSON.stringify(voteRequest), 
             headers: { 'content-type': 'application/json'} ,

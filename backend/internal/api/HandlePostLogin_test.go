@@ -19,7 +19,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestHandleLogin(t *testing.T) {
+func TestHandlePostLogin(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -52,7 +52,7 @@ func TestHandleLogin(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -75,7 +75,7 @@ func TestHandleLogin(t *testing.T) {
 	assert.Regexp(t, regexp.MustCompile("^(?i)Bearer {(.+)(?-i)}"), strings.TrimSpace(split[1]), "bearer was not in correct format")
 }
 
-func TestHandleLogin_InvalidRequestBody(t *testing.T) {
+func TestHandlePostLogin_InvalidRequestBody(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testSecret := "test secret"
@@ -97,7 +97,7 @@ func TestHandleLogin_InvalidRequestBody(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -108,7 +108,7 @@ func TestHandleLogin_InvalidRequestBody(t *testing.T) {
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
 }
 
-func TestHandleLogin_UserNotInDB(t *testing.T) {
+func TestHandlePostLogin_UserNotInDB(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -133,7 +133,7 @@ func TestHandleLogin_UserNotInDB(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -144,7 +144,7 @@ func TestHandleLogin_UserNotInDB(t *testing.T) {
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
 }
 
-func TestHandleLogin_IncorrectPassword(t *testing.T) {
+func TestHandlePostLogin_IncorrectPassword(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -175,7 +175,7 @@ func TestHandleLogin_IncorrectPassword(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -186,7 +186,7 @@ func TestHandleLogin_IncorrectPassword(t *testing.T) {
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
 }
 
-func TestHandleLogin_DBError(t *testing.T) {
+func TestHandlePostLogin_DBError(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -211,7 +211,7 @@ func TestHandleLogin_DBError(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()

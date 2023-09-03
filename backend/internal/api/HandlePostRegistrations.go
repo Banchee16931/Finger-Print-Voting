@@ -7,12 +7,12 @@ import (
 	"net/http"
 )
 
-func (srv *Server) HandleUser(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) HandleGetRegistrations(w http.ResponseWriter, r *http.Request) {
 	userCtx := r.Context().Value(types.UserContext)
 
 	user, ok := userCtx.(types.UserDetails)
 	if !ok {
-		WriteError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate JWT"))
+		HTTPError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate JWT"))
 		return
 	}
 

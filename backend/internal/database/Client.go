@@ -48,3 +48,7 @@ func (client *Client) EnsureValidSchema() error {
 func (client *Client) Close() error {
 	return client.db.Close()
 }
+
+func (client *Client) Begin() (*sql.Tx, error) {
+	return client.db.Begin()
+}
