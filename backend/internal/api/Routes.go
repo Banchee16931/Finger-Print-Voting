@@ -9,10 +9,18 @@ import (
 func (srv *Server) Route() {
 	srv.router = mux.NewRouter()
 
-	srv.router.HandleFunc("/login", srv.HandleLogin).Methods(http.MethodPost)
-	srv.router.HandleFunc("/register", srv.HandleRegister).Methods(http.MethodPost)
+	srv.router.HandleFunc("/login", srv.HandlePostLogin).Methods(http.MethodPost)
+	srv.router.HandleFunc("/registrations", srv.HandlePostRegistration).Methods(http.MethodPost)
 
-	auth := srv.router.NewRoute().Subrouter()
-	auth.Use(srv.MiddlewareAuth)
-	auth.HandleFunc("/user", srv.HandleUser).Methods(http.MethodGet)
+	authLoggedIn := srv.router.NewRoute().Subrouter()
+	authLoggedIn.Use(srv.MiddlewareAuth(AuthLoggedIn))
+
+	authLoggedIn.HandleFunc("/users", srv.HandleGetUser).Methods(http.MethodGet)
+
+	authVoter := srv.router.NewRoute().Subrouter()
+	authVoter.Use(srv.MiddlewareAuth(AuthVoter))
+
+	authAdmin := srv.router.NewRoute().Subrouter()
+	authAdmin.Use(srv.MiddlewareAuth(AuthAdmin))
+
 }

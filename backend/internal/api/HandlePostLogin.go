@@ -13,33 +13,30 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (srv *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) HandlePostLogin(w http.ResponseWriter, r *http.Request) {
 	var userReq types.LoginRequest
 
 	err := json.NewDecoder(r.Body).Decode(&userReq)
-	if err != nil {
-		WriteError(w, http.StatusBadRequest, err)
+	if HTTPError(w, http.StatusBadRequest, err) {
 		return
 	}
 
-	if err := userReq.Validate(); err != nil {
-		WriteError(w, http.StatusBadRequest, err)
+	if err := userReq.Validate(); HTTPError(w, http.StatusBadRequest, err) {
 		return
 	}
 
 	user, err := srv.db.GetUser(userReq.Username)
 	if err != nil {
 		if errors.Is(err, cerr.ErrNotFound) {
-			WriteError(w, http.StatusUnauthorized, err)
+			HTTPError(w, http.StatusUnauthorized, err)
 			return
 		}
-		WriteError(w, http.StatusInternalServerError, err)
+		HTTPError(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userReq.Password))
-	if err != nil {
-		WriteError(w, http.StatusUnauthorized, fmt.Errorf("incorrect password"))
+	if HTTPError(w, http.StatusUnauthorized, err) {
 		return
 	}
 
@@ -47,8 +44,8 @@ func (srv *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	jwt, err := auth.GenerateJWT(srv.passwordSecret, user.Username)
 	if err != nil {
-		log.Println("Error: ", err.Error())
-		WriteError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate JWT"))
+		log.Println("JWT Error: ", err.Error())
+		HTTPError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate JWT"))
 		return
 	}
 

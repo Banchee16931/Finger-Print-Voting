@@ -8,45 +8,71 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
-func (srv *Server) MiddlewareAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Autherization")
+const (
+	AuthVoter = iota
+	AuthAdmin
+	AuthLoggedIn
+)
 
-		log.Println("autherisation header: ", token)
+func (srv *Server) MiddlewareAuth(authLevel int) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := r.Header.Get("Autherization")
 
-		token = strings.TrimSpace(token)
+			log.Println("autherisation header: ", token)
 
-		if !strings.HasPrefix(token, "Bearer {") {
-			WriteError(w, http.StatusUnauthorized, fmt.Errorf("invalid autherization header"))
-			return
-		}
+			token = strings.TrimSpace(token)
 
-		token = strings.TrimPrefix(token, "Bearer {")
+			if !strings.HasPrefix(token, "Bearer {") {
+				HTTPError(w, http.StatusUnauthorized, fmt.Errorf("invalid autherization header"))
+				return
+			}
 
-		if !strings.HasSuffix(token, "}") {
-			WriteError(w, http.StatusUnauthorized, fmt.Errorf("invalid autherization header"))
-			return
-		}
+			token = strings.TrimPrefix(token, "Bearer {")
 
-		token = strings.TrimSuffix(token, "}")
+			if !strings.HasSuffix(token, "}") {
+				HTTPError(w, http.StatusUnauthorized, fmt.Errorf("invalid autherization header"))
+				return
+			}
 
-		claims, err := auth.GetClaims(srv.passwordSecret, token)
-		if err != nil {
-			WriteError(w, http.StatusUnauthorized, fmt.Errorf("failed to get claims"))
-			return
-		}
+			token = strings.TrimSuffix(token, "}")
 
-		user, err := srv.db.GetUser(claims.Username)
-		if err != nil {
-			WriteError(w, http.StatusUnauthorized, fmt.Errorf("failed to get user details"))
-			return
-		}
+			claims, err := auth.GetClaims(srv.passwordSecret, token)
+			if err != nil {
+				HTTPError(w, http.StatusUnauthorized, fmt.Errorf("failed to get claims"))
+				return
+			}
 
-		ctx := context.WithValue(r.Context(), types.UserContext, types.UserDetails{}.FromUser(user))
-		newReq := r.WithContext(ctx)
-		next.ServeHTTP(w, newReq)
-	})
+			user, err := srv.db.GetUser(claims.Username)
+			if err != nil {
+				HTTPError(w, http.StatusUnauthorized, fmt.Errorf("failed to get user details"))
+				return
+			}
+
+			switch authLevel {
+			case AuthVoter:
+				if user.Admin {
+					log.Println("Not a Voter")
+					HTTPError(w, http.StatusForbidden, fmt.Errorf("failed to get user details"))
+					return
+				}
+			case AuthAdmin:
+				if !user.Admin {
+					log.Println("Not an Admin")
+					HTTPError(w, http.StatusForbidden, fmt.Errorf("failed to get user details"))
+					return
+				}
+			case AuthLoggedIn:
+			}
+
+			ctx := context.WithValue(r.Context(), types.UserContext, types.UserDetails{}.FromUser(user))
+			newReq := r.WithContext(ctx)
+			next.ServeHTTP(w, newReq)
+		})
+	}
 
 }

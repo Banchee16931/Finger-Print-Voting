@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestHandleUser(t *testing.T) {
+func TestHandleGetUser(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -47,7 +47,7 @@ func TestHandleUser(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
 	req.Header.Add("Autherization", fmt.Sprintf("Bearer {%s}", jwt))
 
-	srv.MiddlewareAuth(http.HandlerFunc(srv.HandleUser)).ServeHTTP(w, req)
+	srv.MiddlewareAuth(api.AuthLoggedIn)(http.HandlerFunc(srv.HandleGetUser)).ServeHTTP(w, req)
 
 	// Assert
 	res := w.Result()

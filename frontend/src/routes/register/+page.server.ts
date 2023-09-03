@@ -82,7 +82,7 @@ export const actions: Actions = {
         let failure: string | null = null
         let failureStatus: number = 500
 
-        let res = await e.fetch("/api/register", { 
+        let res = await e.fetch("/api/registrations", { 
             method:"POST", 
             body: JSON.stringify(registrationRequest), 
             headers: { 'content-type': 'application/json'} ,

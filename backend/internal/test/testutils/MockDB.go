@@ -1,6 +1,7 @@
 package testutils
 
 import (
+	"database/sql"
 	"finger-print-voting-backend/internal/types"
 
 	"github.com/stretchr/testify/mock"
@@ -40,7 +41,12 @@ func (client *MockDB) GetRegistrants() ([]types.Registrant, error) {
 	return call.Get(0).([]types.Registrant), call.Error(1)
 }
 
-func (client *MockDB) DeleteRegistrant(registrantID int) error {
+func (client *MockDB) GetRegistrant(registrantID int) (types.Registrant, error) {
+	call := client.Called()
+	return call.Get(0).(types.Registrant), call.Error(1)
+}
+
+func (client *MockDB) DeleteRegistrant(tx *sql.Tx, registrantID int) error {
 	call := client.Called(registrantID)
 	return call.Error(0)
 }
@@ -65,12 +71,12 @@ func (client *MockDB) SetupSchema() error {
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreUser(user types.User) error {
+func (client *MockDB) StoreUser(tx *sql.Tx, user types.User) error {
 	call := client.Called(user)
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreVoter(voter types.Voter) error {
+func (client *MockDB) StoreVoter(tx *sql.Tx, voter types.Voter) error {
 	call := client.Called(voter)
 	return call.Error(0)
 }
@@ -103,4 +109,9 @@ func (client *MockDB) GetVotes(electionID int) ([]types.Vote, error) {
 func (client *MockDB) DeleteVotes(electionID int) error {
 	call := client.Called(electionID)
 	return call.Error(0)
+}
+
+func (client *MockDB) Begin() (*sql.Tx, error) {
+	call := client.Called()
+	return call.Get(0).(*sql.Tx), call.Error(1)
 }

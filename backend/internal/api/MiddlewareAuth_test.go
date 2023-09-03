@@ -16,46 +16,75 @@ import (
 
 func TestMiddlewareAuth(t *testing.T) {
 	t.Parallel()
-	// Assign
-	testUsername := "user"
-	testPass := "test_password"
-	testSecret := "test secret"
-	hashedTestPass, err := bcrypt.GenerateFromPassword([]byte(testPass), bcrypt.MinCost)
-	assert.NoError(t, err, "bcrypt returned an error")
 
-	db := testutils.MockDB{}
+	cases := []struct {
+		admin             bool
+		requiredAuthLevel int
+		pass              bool
+	}{
+		{admin: false, requiredAuthLevel: api.AuthVoter, pass: true},
+		{admin: true, requiredAuthLevel: api.AuthAdmin, pass: true},
 
-	expectedUser := types.User{
-		Username:  testUsername,
-		Password:  string(hashedTestPass),
-		Admin:     true,
-		FirstName: "Test",
-		LastName:  "User",
+		{admin: false, requiredAuthLevel: api.AuthLoggedIn, pass: true},
+		{admin: true, requiredAuthLevel: api.AuthLoggedIn, pass: true},
+
+		{admin: false, requiredAuthLevel: api.AuthAdmin, pass: false},
+		{admin: true, requiredAuthLevel: api.AuthVoter, pass: false},
 	}
-	db.On("GetUser", testUsername).Return(expectedUser, nil)
 
-	srv := api.NewServer()
-	srv.WithDBClient(&db)
-	srv.WithPasswordSecret(testSecret)
+	for i := 0; i < len(cases); i++ {
+		tc := cases[i]
+		t.Run(fmt.Sprintf("is admin: %t, required level: %d, should pass: %t", tc.admin, tc.requiredAuthLevel, tc.pass), func(t *testing.T) {
+			t.Parallel()
+			// Assign
+			testUsername := "user"
+			testPass := "test_password"
+			testSecret := "test secret"
+			hashedTestPass, err := bcrypt.GenerateFromPassword([]byte(testPass), bcrypt.MinCost)
+			assert.NoError(t, err, "bcrypt returned an error")
 
-	jwt, err := auth.GenerateJWT(testSecret, testUsername)
-	assert.NoError(t, err, "failed to generate JWT")
+			db := testutils.MockDB{}
 
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	req.Header.Add("Autherization", fmt.Sprintf("Bearer {%s}", jwt))
+			expectedUser := types.User{
+				Username:  testUsername,
+				Password:  string(hashedTestPass),
+				Admin:     tc.admin,
+				FirstName: "Test",
+				LastName:  "User",
+			}
+			db.On("GetUser", testUsername).Return(expectedUser, nil)
 
-	nextHandler := &testutils.MockNextHandler{}
+			srv := api.NewServer()
+			srv.WithDBClient(&db)
+			srv.WithPasswordSecret(testSecret)
 
-	// Act
-	srv.MiddlewareAuth(nextHandler).ServeHTTP(w, req)
+			jwt, err := auth.GenerateJWT(testSecret, testUsername)
+			assert.NoError(t, err, "failed to generate JWT")
 
-	// Assert
-	userCtx := nextHandler.Request(t).Context().Value(types.UserContext)
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/test", nil)
+			req.Header.Add("Autherization", fmt.Sprintf("Bearer {%s}", jwt))
 
-	userDetails, ok := userCtx.(types.UserDetails)
-	assert.True(t, ok, "failed to converted user context")
-	assert.Equal(t, types.UserDetails{}.FromUser(expectedUser), userDetails, "user details do not match expected")
+			nextHandler := &testutils.MockNextHandler{}
+
+			// Act
+			srv.MiddlewareAuth(tc.requiredAuthLevel)(nextHandler).ServeHTTP(w, req)
+
+			// Assert
+			if tc.pass {
+				userCtx := nextHandler.Request(t).Context().Value(types.UserContext)
+				userDetails, ok := userCtx.(types.UserDetails)
+				assert.True(t, ok, "failed to converted user context")
+				assert.Equal(t, types.UserDetails{}.FromUser(expectedUser), userDetails, "user details do not match expected")
+			} else {
+				result := w.Result()
+				nextHandler.NotCalled(t)
+				assert.Equal(t, http.StatusForbidden, result.StatusCode, "incorrect status code")
+			}
+
+		})
+	}
+
 }
 
 func TestMiddlewareAuth_MissingAuthError(t *testing.T) {
@@ -75,7 +104,7 @@ func TestMiddlewareAuth_MissingAuthError(t *testing.T) {
 	nextHandler := &testutils.MockNextHandler{}
 
 	// Act
-	srv.MiddlewareAuth(nextHandler).ServeHTTP(w, req)
+	srv.MiddlewareAuth(api.AuthLoggedIn)(nextHandler).ServeHTTP(w, req)
 
 	// Assert
 	nextHandler.NotCalled(t)
@@ -131,7 +160,7 @@ func TestMiddlewareAuth_IncorrectAuthFormatError(t *testing.T) {
 			nextHandler := &testutils.MockNextHandler{}
 
 			// Act
-			srv.MiddlewareAuth(nextHandler).ServeHTTP(w, req)
+			srv.MiddlewareAuth(api.AuthLoggedIn)(nextHandler).ServeHTTP(w, req)
 
 			// Assert
 			nextHandler.NotCalled(t)
@@ -160,7 +189,7 @@ func TestMiddlewareAuth_NoKeyError(t *testing.T) {
 	nextHandler := &testutils.MockNextHandler{}
 
 	// Act
-	srv.MiddlewareAuth(nextHandler).ServeHTTP(w, req)
+	srv.MiddlewareAuth(api.AuthLoggedIn)(nextHandler).ServeHTTP(w, req)
 
 	// Assert
 	nextHandler.NotCalled(t)
@@ -193,7 +222,7 @@ func TestMiddlewareAuth_NotInDBError(t *testing.T) {
 	nextHandler := &testutils.MockNextHandler{}
 
 	// Act
-	srv.MiddlewareAuth(nextHandler).ServeHTTP(w, req)
+	srv.MiddlewareAuth(api.AuthLoggedIn)(nextHandler).ServeHTTP(w, req)
 
 	// Assert
 	nextHandler.NotCalled(t)
