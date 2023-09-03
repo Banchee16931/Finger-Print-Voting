@@ -48,7 +48,7 @@
         Register
     </h1>
 </Hero>
-<div class="center-container  spaced-container">
+<div class="center-container  spaced-container body-container">
     <!-- successful registration animation -->
     {#if isRegistered}
         <div class="registered-animation">

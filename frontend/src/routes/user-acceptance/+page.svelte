@@ -166,7 +166,7 @@
 </Dialog>
 {/if}
 
-<div class="spaced-container">
+<div class="spaced-container body-container">
     <CardList>
         {#each data.registrations as registrant}
             <div class="card">

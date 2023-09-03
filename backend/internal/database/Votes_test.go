@@ -191,6 +191,10 @@ func TestClient_DeleteVotes(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// mock transaction begin
+			tx, err := db.Begin()
+			assert.NoError(t, err, "begin returned an error")
+
 			// Set up expectations for db.Exec
 			mock.ExpectExec(`DELETE FROM votes WHERE election_id=$1;`).
 				WithArgs(tc.electionID).
@@ -198,7 +202,7 @@ func TestClient_DeleteVotes(t *testing.T) {
 				WillReturnError(tc.mockExecErr)
 
 			// Call the function being tested
-			err = client.DeleteVotes(tc.electionID)
+			err = client.DeleteVotes(tx, tc.electionID)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedErr, "Incorrect error")

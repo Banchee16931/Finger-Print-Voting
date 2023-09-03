@@ -23,7 +23,7 @@
     </p>
 </Hero>
 
-<div class="spaced-container" style="padding-top: 25px;">
+<div class="spaced-container body-container" style="padding-top: 25px;">
     <CardGrid>
         <Card href="/elections" alt="election results">
             Elections

@@ -1,14 +1,15 @@
 package database
 
 import (
+	"database/sql"
 	"finger-print-voting-backend/internal/cerr"
 	"finger-print-voting-backend/internal/types"
 	"fmt"
 	"log"
 )
 
-func (client *Client) StoreResult(result types.ResultRequest) error {
-	_, err := client.db.Exec(`INSERT INTO result (election_id, first_name, last_name, party, votes)
+func (client *Client) StoreResult(tx *sql.Tx, result types.ResultRequest) error {
+	_, err := tx.Exec(`INSERT INTO result (election_id, first_name, last_name, party, votes)
     VALUES ($1, $2, $3, $4, $5);`, result.ElectionID, result.FirstName, result.LastName, result.Party, result.Votes)
 
 	if err != nil {

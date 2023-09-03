@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"finger-print-voting-backend/internal/cerr"
 	"finger-print-voting-backend/internal/types"
 	"fmt"
@@ -44,8 +45,8 @@ func (client *Client) GetVotes(electionID int) ([]types.Vote, error) {
 	return votes, nil
 }
 
-func (client *Client) DeleteVotes(electionID int) error {
-	_, err := client.db.Exec(`DELETE FROM votes WHERE election_id=$1;`, electionID)
+func (client *Client) DeleteVotes(tx *sql.Tx, electionID int) error {
+	_, err := tx.Exec(`DELETE FROM votes WHERE election_id=$1;`, electionID)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

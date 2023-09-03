@@ -90,7 +90,7 @@
     </div>
 </Hero>
 
-<div class="spaced-container" style="margin-top: 10px;">
+<div class="spaced-container body-container" style="margin-top: 10px;">
     {#if happeningElections.length > 0}
     <h3>Ongoing Elections</h3>
     <ElectionList elections={happeningElections}/>

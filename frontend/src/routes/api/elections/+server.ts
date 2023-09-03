@@ -19,14 +19,7 @@ export const POST: RequestHandler = async (e) => {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
-    let res = await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
-    console.log("response: ", res)
-    if (!res.ok) {
-        let err: CommonError = await res.json()
-        throw err
-    }
-
-    return new Response("", { status: 201 })
+    return await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
 };
 
 export const GET: RequestHandler = async (e) => {
@@ -35,14 +28,7 @@ export const GET: RequestHandler = async (e) => {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
-    let res = await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
-    console.log("response: ", res)
-    if (!res.ok) {
-        let err: CommonError = await res.json()
-        throw err
-    }
-
-    return new Response("", { status: 201 })
+    return await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
 };
 
 

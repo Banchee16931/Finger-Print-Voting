@@ -9,6 +9,7 @@ import (
 )
 
 func (client *Client) StoreUser(tx *sql.Tx, user types.User) error {
+	log.Println("details: ", user.Username, user.Password, user.Admin, user.FirstName, user.LastName)
 	_, err := client.db.Exec(`INSERT INTO users (username, encrypted_password, is_admin, first_name, last_name)
     VALUES ($1, $2, $3, $4, $5);`, user.Username, user.Password, user.Admin, user.FirstName, user.LastName)
 
@@ -20,35 +21,18 @@ func (client *Client) StoreUser(tx *sql.Tx, user types.User) error {
 }
 
 func (client *Client) StoreVoter(tx *sql.Tx, voter types.Voter) error {
+	log.Println("details: ", voter.Username, voter.PhoneNo, voter.Email)
 	_, err := tx.Exec(`INSERT INTO voter_details (username, phone_no, email, fingerprint, authority_location)
 	VALUES ($1, $2, $3, $4, $5);`, voter.User.Username, voter.PhoneNo, voter.Email, voter.Fingerprint, voter.Location)
 
 	if err != nil {
-		rollErr := tx.Rollback()
-		if rollErr != nil {
-			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
-		}
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	err = client.StoreUser(tx, voter.User)
 
 	if err != nil {
-		rollErr := tx.Rollback()
-		if rollErr != nil {
-			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
-		}
-		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
-	}
-
-	err = tx.Commit()
-
-	if err != nil {
-		rollErr := tx.Rollback()
-		if rollErr != nil {
-			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
-		}
-		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+		return fmt.Errorf("stored user: %w: %s", cerr.ErrDB, err.Error())
 	}
 
 	return nil

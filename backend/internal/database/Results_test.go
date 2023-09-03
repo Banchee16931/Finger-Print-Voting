@@ -63,6 +63,10 @@ func TestClient_StoreResult(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// mock transaction begin
+			tx, err := db.Begin()
+			assert.NoError(t, err, "begin returned an error")
+
 			// Set up expectations for db.Exec
 			mock.ExpectExec(`INSERT INTO result (election_id, first_name, last_name, party, votes) VALUES ($1, $2, $3, $4, $5);`).
 				WithArgs(tc.inputResult.ElectionID, tc.inputResult.FirstName, tc.inputResult.LastName, tc.inputResult.Party, tc.inputResult.Votes).
@@ -70,7 +74,7 @@ func TestClient_StoreResult(t *testing.T) {
 				WillReturnError(tc.mockExecErr)
 
 			// Call the function being tested
-			err = client.StoreResult(tc.inputResult)
+			err = client.StoreResult(tx, tc.inputResult)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedErr, "Incorrect error")

@@ -29,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	schemaLoc := fmt.Sprintf("%s\\schemas", codebaseLoc)
+	schemaLoc := fmt.Sprintf("%s\\internal\\database\\schemas", codebaseLoc)
 
 	if err := db.SetupSchema(schemaLoc); err != nil {
 		panic(err)

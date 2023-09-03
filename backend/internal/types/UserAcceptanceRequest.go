@@ -11,11 +11,11 @@ type UserAcceptanceRequest struct {
 
 func (req UserAcceptanceRequest) Validate() error {
 	if req.Username == "" {
-		return fmt.Errorf("first name is empty")
+		return fmt.Errorf("username is empty")
 	}
 
 	if req.Password == "" {
-		return fmt.Errorf("first name is empty")
+		return fmt.Errorf("password is empty")
 	}
 
 	return nil

@@ -29,7 +29,7 @@ func (srv *Server) Route() {
 	authAdmin.Use(srv.MiddlewareAuth(AuthAdmin))
 
 	authAdmin.HandleFunc("/registrations/acceptance", srv.HandlePostRegistrationAcceptance).Methods(http.MethodPost)
-	authAdmin.HandleFunc("/registrations", srv.HandlePostRegistration).Methods(http.MethodPost)
+	authAdmin.HandleFunc("/registrations", srv.HandleGetRegistrations).Methods(http.MethodGet)
 	authAdmin.HandleFunc("/elections", srv.HandlePostElection).Methods(http.MethodPost)
 
 }

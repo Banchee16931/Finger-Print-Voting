@@ -7,7 +7,10 @@ export const load = (async (e) => {
     console.log("loading reg")
     let res = await e.fetch("/api/elections", { method: "GET" })
     if (!res.ok) {
-        throw NewError("failed to load elections: ", res)
+        if (res.status == 404) {
+            return {elections: []};
+        }
+        throw NewError("failed to load elections", res)
     }
 
     let elections: ElectionState[] = await res.json()

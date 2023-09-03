@@ -316,11 +316,17 @@ func TestClient_DeleteCandidates(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// mock transaction begin
+			tx, err := db.Begin()
+			assert.NoError(t, err, "begin returned an error")
+
 			// Set up expectations for db.Exec
 			tc.mockExpectation(mock)
 
+			mock.ExpectBegin()
+
 			// Call the function being tested
-			err = client.DeleteCandidates(tc.electionID)
+			err = client.DeleteCandidates(tx, tc.electionID)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedError, "Incorrect error type")

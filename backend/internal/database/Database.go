@@ -17,18 +17,18 @@ type Database interface {
 	GetElection(electionID int) (types.Election, error)
 	GetElectionByLocation(location string) ([]types.Election, error)
 	GetCandidates(electionID int) ([]types.Candidate, error)
-	DeleteCandidates(electionID int) error
+	DeleteCandidates(tx *sql.Tx, electionID int) error
 
 	StoreVote(vote types.Vote) error
 	GetVotes(electionID int) ([]types.Vote, error)
-	DeleteVotes(electionID int) error
+	DeleteVotes(tx *sql.Tx, electionID int) error
 
 	StoreRegistrant(registrant types.RegistrationRequest) error
 	GetRegistrants() ([]types.Registrant, error)
 	GetRegistrant(registrantID int) (types.Registrant, error)
 	DeleteRegistrant(tx *sql.Tx, registrantID int) error
 
-	StoreResult(result types.ResultRequest) error
+	StoreResult(tx *sql.Tx, result types.ResultRequest) error
 	GetResults(electionID int) ([]types.Result, error)
 
 	Begin() (*sql.Tx, error)

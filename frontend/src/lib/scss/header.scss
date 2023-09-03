@@ -5,14 +5,14 @@ $header-height: 50px;
 .footer {
     @include animated;
 
-    height: 200px;
+    height: 165px;
     width: 100%;
     margin-top: 50px;
     z-index: 100000;
     background-color: var(--background-tertiary);
     color: var(--text);
     border-top: 5px var(--primary) solid;
-    text-align: start;
+    font-size: 12px;
 
     .format {
         position: relative;
@@ -21,22 +21,22 @@ $header-height: 50px;
         align-items: start;
         justify-content: end;
         height: 100%;
-        padding-bottom: 25px;
+        padding-bottom: 20px;
         opacity: 0.6;
 
         .crestContainer {
             text-align: center;
             position: absolute;
             right: 0;
-            bottom: 25px;
-            font-size: 12px;
+            bottom: 15px;
+            font-size: 9px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
     
             .crest {
-                height: 150px;
+                height: 120px;
             }
         }
     }

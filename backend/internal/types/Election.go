@@ -30,6 +30,27 @@ type CandidateVotes struct {
 	Votes       int    `json:"votes"`
 }
 
+func MergeCandidatesAndVotes(candidates []Candidate, votes []Vote) []CandidateVotes {
+	voteMap := make(map[int]int)
+
+	for _, vote := range votes {
+		voteMap[vote.CandidateID] = voteMap[vote.CandidateID] + 1
+	}
+
+	candidateVotes := []CandidateVotes{}
+	for _, candidate := range candidates {
+		candidateVotes = append(candidateVotes, CandidateVotes{
+			FirstName:   candidate.FirstName,
+			LastName:    candidate.LastName,
+			Party:       candidate.Party,
+			PartyColour: candidate.PartyColour,
+			Votes:       voteMap[candidate.CandidateID],
+		})
+	}
+
+	return candidateVotes
+}
+
 type ElectionRequest struct {
 	Start      string             `json:"start"`
 	End        string             `json:"end"`

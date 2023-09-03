@@ -182,8 +182,8 @@ func (client *Client) GetCandidates(electionID int) ([]types.Candidate, error) {
 	return candidates, nil
 }
 
-func (client *Client) DeleteCandidates(electionID int) error {
-	_, err := client.db.Exec(`DELETE FROM candidates WHERE election_id = $1;`, electionID)
+func (client *Client) DeleteCandidates(tx *sql.Tx, electionID int) error {
+	_, err := tx.Exec(`DELETE FROM candidates WHERE election_id = $1;`, electionID)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

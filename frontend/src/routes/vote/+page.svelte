@@ -70,7 +70,7 @@
     </Dialog>
 {/if}
 
-<div class="spaced-container">
+<div class="spaced-container body-container">
     <!-- error message displayed to user -->
     {#if form?.error}
         <span class="inPageError" style="width: 250px;">Error: {form?.error}</span>
@@ -83,7 +83,7 @@
     </CardGrid>
 </div>
 {:else}
-    <div class="spaced-container">
+    <div class="spaced-container body-container">
         <div class="center-container registered-animation">
             <TickAnimation start={true} size="10rem;"/>
             <h1>You have Voted!</h1>

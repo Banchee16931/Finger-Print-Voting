@@ -18,12 +18,6 @@ func (srv *Server) HandlePostRegistrationAcceptance(w http.ResponseWriter, r *ht
 		return
 	}
 
-	// check the request is valid
-	err = registrationReq.Validate()
-	if HTTPError(w, http.StatusBadRequest, err) {
-		return
-	}
-
 	// get the registrant being accepted or declined
 	registrant, err := srv.db.GetRegistrant(registrationReq.RegistrantID)
 	if HTTPError(w, http.StatusNotFound, err) {
@@ -44,6 +38,12 @@ func (srv *Server) HandlePostRegistrationAcceptance(w http.ResponseWriter, r *ht
 
 	// if accepted the new voter account needs to be created
 	if registrationReq.Accepted {
+		// check the request is valid
+		err = registrationReq.Validate()
+		if HTTPError(w, http.StatusBadRequest, err) {
+			return
+		}
+
 		log.Println("user accepted: ", registrationReq.Username)
 
 		// encrypt password

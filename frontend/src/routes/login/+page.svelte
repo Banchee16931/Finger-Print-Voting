@@ -10,7 +10,7 @@
         Login
     </h1>
 </Hero>
-<div class="center-container spaced-container">
+<div class="center-container spaced-container body-container">
     <form class="form card" method="POST" action="?/login">
         <span class="circle-one"/>
         <span class="circle-two"/>

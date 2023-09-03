@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"finger-print-voting-backend/internal/types"
+	"fmt"
 	"net/http"
 )
 
@@ -52,22 +53,7 @@ func (srv *Server) HandleGetElections(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			voteMap := make(map[int]int)
-
-			for _, vote := range votes {
-				voteMap[vote.CandidateID] = voteMap[vote.CandidateID] + 1
-			}
-
-			candidateVotes := []types.CandidateVotes{}
-			for _, candidate := range candidates {
-				candidateVotes = append(candidateVotes, types.CandidateVotes{
-					FirstName:   candidate.FirstName,
-					LastName:    candidate.LastName,
-					Party:       candidate.Party,
-					PartyColour: candidate.PartyColour,
-					Votes:       voteMap[candidate.CandidateID],
-				})
-			}
+			candidateVotes := types.MergeCandidatesAndVotes(candidates, votes)
 
 			electionStates = append(electionStates, types.ElectionState{
 				ElectionID: election.ElectionID,
@@ -77,7 +63,11 @@ func (srv *Server) HandleGetElections(w http.ResponseWriter, r *http.Request) {
 				Result:     candidateVotes,
 			})
 		}
+	}
 
+	if len(electionStates) <= 0 {
+		HTTPError(w, http.StatusNotFound, fmt.Errorf("no elections stored"))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
