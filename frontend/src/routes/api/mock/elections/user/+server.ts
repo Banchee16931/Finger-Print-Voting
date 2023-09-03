@@ -1,27 +1,26 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Election, ElectionRequest, Candidate, CandidateVotes, ElectionState } from '$lib/types';
-import { elections, electionState, votes, voters } from "../../data"
-import { Authority } from '../../handleAuth';
+import { elections, electionState, votes, voters, getUser } from "../../data"
+import { Authority, StripBearer } from '../../handleAuth';
 import { NewError } from '$lib/types/CommonError';
 
 export const GET: RequestHandler = async (e) => {
-    console.log("Mocked GET /api/elections/[username]")
+    console.log("Mocked GET /api/elections/user")
     let req = e.request
 
-    let username = e.params.username
-    if (!username) {
-        return new Response(JSON.stringify(NewError("missing username param")), {status: 500});
-    }
+    let authHeader = StripBearer(req.headers.get("Autherization"))
 
-    let authHeader = req.headers.get("Autherization")
-    console.log("auth header: ", authHeader)
-
-    if (!authHeader || Authority(authHeader) === undefined) {
+    if (!authHeader) {
         return new Response(JSON.stringify(NewError("invalid credentials")), {status: 401});
     }
 
+    let user = getUser(authHeader)
+    if (!user) {
+        return new Response(JSON.stringify(NewError("user doesn't exist")), {status: 404});
+    }
+
     let voter = voters.find((voter) => {
-        if (voter.username === username) {
+        if (voter.username === user?.username) {
             return true
         }
 

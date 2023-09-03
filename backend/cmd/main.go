@@ -4,7 +4,9 @@ import (
 	"finger-print-voting-backend/internal/api"
 	"finger-print-voting-backend/internal/config"
 	"finger-print-voting-backend/internal/database"
+	"fmt"
 	"log"
+	"os"
 )
 
 func main() {
@@ -17,7 +19,14 @@ func main() {
 		panic(err)
 	}
 
-	if err := db.EnsureValidSchema(); err != nil {
+	codebaseLoc, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	schemaLoc := fmt.Sprintf("%s\\schemas", codebaseLoc)
+
+	if err := db.EnsureValidSchema(schemaLoc); err != nil {
 		panic(err)
 	}
 

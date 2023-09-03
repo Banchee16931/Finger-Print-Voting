@@ -21,9 +21,14 @@ func (client *MockDB) GetElections() ([]types.Election, error) {
 	return call.Get(0).([]types.Election), call.Error(1)
 }
 
+func (client *MockDB) GetElectionByLocation(location string) ([]types.Election, error) {
+	call := client.Called(location)
+	return call.Get(0).([]types.Election), call.Error(1)
+}
+
 func (client *MockDB) GetCandidates(electionID int) ([]types.Candidate, error) {
 	call := client.Called(electionID)
-	return call.Get(0).([]types.Candidate), call.Error(0)
+	return call.Get(0).([]types.Candidate), call.Error(1)
 }
 
 func (client *MockDB) DeleteCandidates(electionID int) error {
@@ -42,12 +47,12 @@ func (client *MockDB) GetRegistrants() ([]types.Registrant, error) {
 }
 
 func (client *MockDB) GetRegistrant(registrantID int) (types.Registrant, error) {
-	call := client.Called()
+	call := client.Called(registrantID)
 	return call.Get(0).(types.Registrant), call.Error(1)
 }
 
 func (client *MockDB) DeleteRegistrant(tx *sql.Tx, registrantID int) error {
-	call := client.Called(registrantID)
+	call := client.Called(tx, registrantID)
 	return call.Error(0)
 }
 
@@ -72,12 +77,12 @@ func (client *MockDB) SetupSchema() error {
 }
 
 func (client *MockDB) StoreUser(tx *sql.Tx, user types.User) error {
-	call := client.Called(user)
+	call := client.Called(tx, user)
 	return call.Error(0)
 }
 
 func (client *MockDB) StoreVoter(tx *sql.Tx, voter types.Voter) error {
-	call := client.Called(voter)
+	call := client.Called(tx, voter)
 	return call.Error(0)
 }
 

@@ -112,6 +112,38 @@ func (client *Client) GetElections() ([]types.Election, error) {
 	return elections, nil
 }
 
+func (client *Client) GetElectionByLocation(location string) ([]types.Election, error) {
+	log.Printf("Getting elections from %s", location)
+
+	rows, err := client.db.Query(`SELECT election_id, election_start, election_end, authority_location FROM elections WHERE authority_location=$1;`,
+		location)
+	if err != nil {
+		return []types.Election{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+	}
+
+	elections := []types.Election{}
+
+	for rows.Next() {
+		election := types.Election{}
+
+		if err := rows.Scan(&election.ElectionID, &election.Start, &election.End, &election.Location); err != nil {
+			return []types.Election{}, err
+		}
+
+		if err != nil {
+			return []types.Election{}, err
+		}
+
+		elections = append(elections, election)
+	}
+
+	if err = rows.Err(); err != nil {
+		return []types.Election{}, err
+	}
+
+	return elections, nil
+}
+
 func (client *Client) GetCandidates(electionID int) ([]types.Candidate, error) {
 	log.Printf("Getting candidates")
 

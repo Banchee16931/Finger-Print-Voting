@@ -2,8 +2,10 @@ package database
 
 import (
 	"database/sql"
+	"finger-print-voting-backend/internal/cerr"
 	"finger-print-voting-backend/internal/config"
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -38,14 +40,14 @@ func NewClientFromDatabase(db *sql.DB) *Client {
 	return &client
 }
 
-func (client *Client) EnsureValidSchema() error {
+func (client *Client) EnsureValidSchema(schemaLocation string) error {
 	setup, err := client.IsSchemaSetup()
 	if err != nil {
 		return err
 	}
 
 	if !setup {
-		if err := client.SetupSchema(); err != nil {
+		if err := client.SetupSchema(schemaLocation); err != nil {
 			return err
 		}
 	}
@@ -59,4 +61,15 @@ func (client *Client) Close() error {
 
 func (client *Client) Begin() (*sql.Tx, error) {
 	return client.db.Begin()
+}
+
+func (client *Client) DropDBTables() error {
+	_, err := client.db.Exec(`DROP SCHEMA public CASCADE;
+	CREATE SCHEMA public;`)
+	if err != nil {
+		return fmt.Errorf("%w: %s", cerr.ErrDB, err)
+	}
+
+	log.Println("Dropped all tables")
+	return nil
 }

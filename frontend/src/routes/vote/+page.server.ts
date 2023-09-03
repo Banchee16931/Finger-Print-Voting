@@ -11,8 +11,8 @@ export const load = (async (e) => {
     }
 
     console.log("username: ", parent.user.username)
-    console.log("path: ", `/api/elections/${parent.user.username}`)
-    let response = await e.fetch(`/api/elections/${parent.user.username}`, { method: "GET" })
+    console.log("path: ", `/api/elections/user`)
+    let response = await e.fetch(`/api/elections/user`, { method: "GET" })
     let election: Election | null = null
     if (!response.ok) {
         let err: CommonError = await response.json()

@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type Candidate struct {
 	CandidateID int    `json:"candidate_id"` // PK
 	ElectionID  int    `json:"election_id"`  // FK
@@ -16,4 +18,28 @@ type CandidateRequest struct {
 	Party       string `json:"party"`
 	PartyColour string `json:"party_colour"`
 	Photo       string `json:"photo"`
+}
+
+func (req CandidateRequest) Validate() error {
+	if req.FirstName == "" {
+		return fmt.Errorf("first name is empty")
+	}
+
+	if req.LastName == "" {
+		return fmt.Errorf("last name is empty")
+	}
+
+	if req.Party == "" {
+		return fmt.Errorf("party is empty")
+	}
+
+	if req.PartyColour == "" {
+		return fmt.Errorf("party colour is empty")
+	}
+
+	if req.Photo == "" {
+		return fmt.Errorf("no photo given")
+	}
+
+	return nil
 }
