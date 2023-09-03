@@ -71,7 +71,7 @@ func (client *Client) GetVoter(username string) (types.Voter, error) {
 			return types.Voter{}, cerr.ErrNotFound
 		}
 
-		return types.Voter{}, err
+		return types.Voter{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	user, err := client.GetUser(username)
@@ -96,7 +96,7 @@ func (client *Client) GetUser(username string) (types.User, error) {
 			return types.User{}, cerr.ErrNotFound
 		}
 
-		return types.User{}, err
+		return types.User{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	return user, nil

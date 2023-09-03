@@ -32,13 +32,13 @@ func (client *Client) GetVotes(electionID int) ([]types.Vote, error) {
 		vote := types.Vote{}
 
 		if err := rows.Scan(&vote.Username, &vote.ElectionID, &vote.CandidateID); err != nil {
-			return []types.Vote{}, err
+			return []types.Vote{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 		}
 		votes = append(votes, vote)
 	}
 
 	if err = rows.Err(); err != nil {
-		return []types.Vote{}, err
+		return []types.Vote{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	return votes, nil

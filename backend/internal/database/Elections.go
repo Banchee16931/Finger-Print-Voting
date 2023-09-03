@@ -99,18 +99,14 @@ func (client *Client) GetElections() ([]types.Election, error) {
 		election := types.Election{}
 
 		if err := rows.Scan(&election.ElectionID, &election.Start, &election.End, &election.Location); err != nil {
-			return []types.Election{}, err
-		}
-
-		if err != nil {
-			return []types.Election{}, err
+			return []types.Election{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 		}
 
 		elections = append(elections, election)
 	}
 
 	if err = rows.Err(); err != nil {
-		return []types.Election{}, err
+		return []types.Election{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	return elections, nil
@@ -130,13 +126,13 @@ func (client *Client) GetCandidates(electionID int) ([]types.Candidate, error) {
 		candidate := types.Candidate{}
 
 		if err := rows.Scan(&candidate.CandidateID, &candidate.ElectionID, &candidate.FirstName, &candidate.LastName, &candidate.Party, &candidate.PartyColour, &candidate.Photo); err != nil {
-			return []types.Candidate{}, err
+			return []types.Candidate{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 		}
 		candidates = append(candidates, candidate)
 	}
 
 	if err = rows.Err(); err != nil {
-		return []types.Candidate{}, err
+		return []types.Candidate{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	return candidates, nil

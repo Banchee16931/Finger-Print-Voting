@@ -7,16 +7,16 @@ import (
 	"os"
 )
 
-func (client *Client) IsSchemaSetup() (bool, error) {
-	sqlTables := []string{"voter_details", "users", "registrants"}
+var SQLTables = []string{"voter_details", "users", "registrants"}
 
+func (client *Client) IsSchemaSetup() (bool, error) {
 	schemaSetup := true
 
-	for i := 0; i < len(sqlTables); i++ {
-		log.Printf("Checking for table: %s", sqlTables[i])
+	for i := 0; i < len(SQLTables); i++ {
+		log.Printf("Checking for table: %s", SQLTables[i])
 		row := client.db.QueryRow(`SELECT EXISTS 
 		(SELECT * FROM INFORMATION_SCHEMA.TABLES 
-		WHERE table_name=$1)`, sqlTables[i])
+		WHERE table_name=$1)`, SQLTables[i])
 
 		var tableExists bool = false
 

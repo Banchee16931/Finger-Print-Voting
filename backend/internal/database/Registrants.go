@@ -34,13 +34,13 @@ func (client *Client) GetRegistrants() ([]types.Registrant, error) {
 
 		if err := rows.Scan(&registrant.RegistrantID, &registrant.FirstName, &registrant.LastName, &registrant.Email, &registrant.PhoneNo,
 			&registrant.Fingerprint, &registrant.ProofOfIdentity, &registrant.Location); err != nil {
-			return []types.Registrant{}, err
+			return []types.Registrant{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 		}
 		registrants = append(registrants, registrant)
 	}
 
 	if err = rows.Err(); err != nil {
-		return []types.Registrant{}, err
+		return []types.Registrant{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
 	return registrants, nil

@@ -30,6 +30,14 @@ func NewDatabase(cfg config.DBConfig) (*Client, error) {
 	return &client, nil
 }
 
+func NewClientFromDatabase(db *sql.DB) *Client {
+	client := Client{
+		db: db,
+	}
+
+	return &client
+}
+
 func (client *Client) EnsureValidSchema() error {
 	setup, err := client.IsSchemaSetup()
 	if err != nil {
