@@ -151,6 +151,7 @@ func main() {
 	voteArray := []int{420, 122, 530}
 	nameCounter := 0
 	for i, votes := range voteArray {
+		log.Println("Storing User Batch: ", i)
 		for j := 0; j < votes; j++ {
 			db.StoreUser(tx, types.User{
 				Username:  fmt.Sprintf("User %d", nameCounter),
