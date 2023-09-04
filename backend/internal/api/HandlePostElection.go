@@ -9,14 +9,17 @@ import (
 	"time"
 )
 
+// Creates a new election
 func (srv *Server) HandlePostElection(w http.ResponseWriter, r *http.Request) {
 	var electionReq types.ElectionRequest
 
+	// get request
 	err := json.NewDecoder(r.Body).Decode(&electionReq)
 	if HTTPError(w, http.StatusBadRequest, err) {
 		return
 	}
 
+	// check request is avlid
 	if err := electionReq.Validate(); HTTPError(w, http.StatusBadRequest, err) {
 		return
 	}
@@ -27,7 +30,7 @@ func (srv *Server) HandlePostElection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	now := time.Now()
+	now := time.Now() // time as of the request
 
 	// filtering out old elections
 	existingElections := []types.Election{}
@@ -48,6 +51,7 @@ func (srv *Server) HandlePostElection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// store the election
 	if err = srv.db.StoreElection(electionReq); HTTPError(w, http.StatusInternalServerError, err) {
 		return
 	}

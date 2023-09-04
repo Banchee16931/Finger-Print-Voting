@@ -10,7 +10,7 @@ type Database interface {
 	StoreVoter(tx *sql.Tx, voter types.Voter) error
 	GetVoter(username string) (types.Voter, error)
 	GetUser(username string) (types.User, error)
-	DeleteVoter(voter string) error
+	DeleteVoter(tx *sql.Tx, voter string) error
 
 	StoreElection(election types.ElectionRequest) error
 	GetElections() ([]types.Election, error)
@@ -19,7 +19,7 @@ type Database interface {
 	GetCandidates(electionID int) ([]types.Candidate, error)
 	DeleteCandidates(tx *sql.Tx, electionID int) error
 
-	StoreVote(vote types.Vote) error
+	StoreVote(tx *sql.Tx, vote types.Vote) error
 	GetVotes(electionID int) ([]types.Vote, error)
 	DeleteVotes(tx *sql.Tx, electionID int) error
 

@@ -56,7 +56,6 @@ func (client *Client) EnsureValidSchema(schemaLocation string) error {
 }
 
 func (client *Client) Close() error {
-	log.Panicln("DB closed")
 	return client.db.Close()
 }
 

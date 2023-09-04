@@ -169,17 +169,11 @@ func main() {
 		}
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		log.Println(fmt.Sprint("failed to commit tx: ", err.Error()))
-		return
-	}
-
 	nameCounter = 0
 	for i, votes := range voteArray {
 		log.Println("Storing Votes: ", i)
 		for j := 0; j < votes; j++ {
-			err := db.StoreVote(types.Vote{
+			err := db.StoreVote(tx, types.Vote{
 				ElectionID:  2,
 				CandidateID: i + 1,
 				Username:    fmt.Sprintf("User %d", nameCounter),
@@ -191,40 +185,13 @@ func main() {
 			nameCounter += 1
 		}
 	}
-}
 
-// ["Conservative and Unionist Party", "#0087DC"],
-//         ["Labour Party", "#E4003B"],
-//         ["Scottish National Party", "#FDF38E"],
-//         ["Co-operative Party", "#3F1D70"],
-//         ["Liberal Democrats", "#FAA61A"],
-//         ["Democratic Unionist Party", "#D46A4C"],
-//         ["Sinn Féin", "#326760"],
-//         ["Plaid Cymru", "#005B54"],
-//         ["Social Democratic and Labour Party", "#2AA82C"],
-//         ["Ulster Unionist Party", "#48A5EE"],
-//         ["Green Party of England and Wales", "#02A95B"],
-//         ["Scottish Greens", "#00B140"],
-//         ["Alliance Party of Northern Ireland", "#F6CB2F"],
-//         ["Traditional Unionist Voice", "#0C3A6A"],
-//         ["People Before Profit", "#E91D50"],
-//         ["Alba Party", "#005EB8"],
-//         ["Reclaim Party", "#C03F31"],
-//         ["Reclaim", "#C03F31"],
-//         ["Liberal Party", "#EB7A43"],
-//         ["Reform UK", "#12B6CF"],
-//         ["Social Democratic Party (SDP)", "#D25469"],
-//         ["Official Monster Raving Loony Party (OMRLP)", "#FFF000"],
-//         ["British Democrats (BDP)", "#1C1CF0"],
-//         ["Breakthrough Party", "#F38B3D"],
-//         ["Women's Equality Party (WEP)", "#64B69A"],
-//         ["Animal Welfare Party (AWP)", "#EE3263"],
-//         ["Climate Party", "#36d0b6"],
-//         ["Harmony Party UK", "#D60600"],
-//         ["National Flood Prevention Party", "#DCDCDC"],
-//         ["Populist Party (UK)", "#D60600"],
-//         ["Trade Unionist and Socialist Coalition (TUSC)", "#ec008c"],
-//         ["Independent", "#DCDCDC"]
+	err = tx.Commit()
+	if err != nil {
+		log.Println(fmt.Sprint("failed to commit tx: ", err.Error()))
+		return
+	}
+}
 
 var futureElections = []types.ElectionRequest{
 	{

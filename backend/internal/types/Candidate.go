@@ -2,6 +2,7 @@ package types
 
 import "fmt"
 
+// This is what the database will output when getting a list of candidate
 type Candidate struct {
 	CandidateID int    `json:"candidate_id"` // PK
 	ElectionID  int    `json:"election_id"`  // FK
@@ -12,6 +13,7 @@ type Candidate struct {
 	Photo       string `json:"photo"`
 }
 
+// This is what the API will input into the database to generate a Candidate
 type CandidateRequest struct {
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
@@ -20,6 +22,7 @@ type CandidateRequest struct {
 	Photo       string `json:"photo"`
 }
 
+// Ensures that the CandidateRequest has not blank values
 func (req CandidateRequest) Validate() error {
 	if req.FirstName == "" {
 		return fmt.Errorf("first name is empty")

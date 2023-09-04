@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// Stores a user's registration
 func (srv *Server) HandlePostRegistration(w http.ResponseWriter, r *http.Request) {
 	var registrationReq types.RegistrationRequest
 

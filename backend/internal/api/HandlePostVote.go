@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
+// Votes for a given election
 func (srv *Server) HandlePostVote(w http.ResponseWriter, r *http.Request) {
-	// get user account
-	userCtx := r.Context().Value(types.UserContext)
+	userCtx := r.Context().Value(types.UserContext) // get user account
 
 	user, ok := userCtx.(types.UserDetails)
 	if !ok {
-		HTTPError(w, http.StatusInternalServerError, fmt.Errorf("failed to generate JWT"))
+		HTTPError(w, http.StatusInternalServerError, fmt.Errorf("failed to get user account"))
 		return
 	}
 
@@ -90,11 +90,28 @@ func (srv *Server) HandlePostVote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	srv.db.StoreVote(types.Vote{
+	tx, err := srv.db.Begin()
+	if HTTPError(w, http.StatusInternalServerError, err) {
+		return
+	}
+
+	err = srv.db.StoreVote(tx, types.Vote{
 		ElectionID:  voteReq.ElectionID,
 		CandidateID: voteReq.CandidateID,
 		Username:    user.Username,
 	})
+	if HTTPErrorWithRollback(tx, w, http.StatusInternalServerError, err) {
+		return
+	}
+
+	err = srv.db.DeleteVoter(tx, user.Username)
+	if HTTPErrorWithRollback(tx, w, http.StatusInternalServerError, err) {
+		return
+	}
+
+	if HTTPError(w, http.StatusInternalServerError, tx.Commit()) {
+		return
+	}
 
 	log.Println("Stored Election")
 

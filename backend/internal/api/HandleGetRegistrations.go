@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Gets a list of registrantions
 func (srv *Server) HandleGetRegistrations(w http.ResponseWriter, r *http.Request) {
 	// get the registrants
 	registrants, err := srv.db.GetRegistrants()
@@ -13,5 +14,5 @@ func (srv *Server) HandleGetRegistrations(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&registrants)
+	json.NewEncoder(w).Encode(&registrants) // output the registrants
 }

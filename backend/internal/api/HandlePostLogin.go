@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Creates a JWT based on the user who has triggered this endpoint
 func (srv *Server) HandlePostLogin(w http.ResponseWriter, r *http.Request) {
 	var userReq types.LoginRequest
 

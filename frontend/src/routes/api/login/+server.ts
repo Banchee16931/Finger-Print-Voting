@@ -3,7 +3,7 @@ import { BACKEND_ENDPOINT } from '$env/static/private';
 import { mockPath } from "../mock/mockEndpoint";
 
 export const POST: RequestHandler = async (e) => {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 

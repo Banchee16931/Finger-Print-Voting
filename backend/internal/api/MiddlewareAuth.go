@@ -18,6 +18,7 @@ const (
 	AuthLoggedIn
 )
 
+// Outputs
 func (srv *Server) MiddlewareAuth(authLevel int) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

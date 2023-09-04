@@ -23,7 +23,7 @@ func (srv *Server) Route() {
 	authVoter.Use(srv.MiddlewareAuth(AuthVoter))
 
 	authVoter.HandleFunc("/elections/user", srv.HandleGetElectionForUser).Methods(http.MethodGet)
-	authVoter.HandleFunc("/vote", srv.HandlePostVote).Methods(http.MethodPost)
+	authVoter.HandleFunc("/votes", srv.HandlePostVote).Methods(http.MethodPost)
 
 	authAdmin := srv.router.NewRoute().Subrouter()
 	authAdmin.Use(srv.MiddlewareAuth(AuthAdmin))

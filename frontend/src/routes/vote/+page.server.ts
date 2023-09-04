@@ -17,9 +17,9 @@ export const load = (async (e) => {
     if (!response.ok) {
         let err: CommonError = await response.json()
 
-        if (err.metadata.noUserAccount !== true) {
+        if (response.status == 401) {
             throw NewError(`getting current election failed: ${response.statusText}, ${await response.text()}`)
-        }
+        } 
     } else {
         election = await response.json()
     }

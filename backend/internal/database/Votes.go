@@ -8,8 +8,8 @@ import (
 	"log"
 )
 
-func (client *Client) StoreVote(vote types.Vote) error {
-	_, err := client.db.Exec(`INSERT INTO votes (username, election_id, candidate_id)
+func (client *Client) StoreVote(tx *sql.Tx, vote types.Vote) error {
+	_, err := tx.Exec(`INSERT INTO votes (username, election_id, candidate_id)
     VALUES ($1, $2, $3);`, vote.Username, vote.ElectionID, vote.CandidateID)
 
 	if err != nil {

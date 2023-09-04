@@ -2,6 +2,7 @@ package types
 
 import "fmt"
 
+// This is what the API will input into the database to register a user
 type RegistrationRequest struct {
 	FirstName       string `json:"first_name"`
 	LastName        string `json:"last_name"`
@@ -12,6 +13,7 @@ type RegistrationRequest struct {
 	Location        string `json:"location"`
 }
 
+// Ensures that the RegistrationRequest has not blank values
 func (req RegistrationRequest) Validate() error {
 	if req.FirstName == "" {
 		return fmt.Errorf("first name is empty")

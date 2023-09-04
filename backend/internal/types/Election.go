@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// This is what the database returned when getting elections
 type Election struct {
 	ElectionID int    `json:"election_id"` // PK
 	Start      string `json:"start"`
@@ -14,6 +15,16 @@ type Election struct {
 	Location   string `json:"location"`
 }
 
+// This is what the api returns when getting a user's election
+type ElectionWithCandidates struct {
+	ElectionID int         `json:"election_id"` // PK
+	Start      string      `json:"start"`
+	End        string      `json:"end"`
+	Location   string      `json:"location"`
+	Candidates []Candidate `json:"candidates"`
+}
+
+// This is what the api returns when getting the current state of elections
 type ElectionState struct {
 	ElectionID int              `json:"election_id"`
 	Start      string           `json:"start"`
@@ -22,6 +33,7 @@ type ElectionState struct {
 	Result     []CandidateVotes `json:"result"`
 }
 
+// This is a generalisation of the data stored in results and candidates with votes
 type CandidateVotes struct {
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
@@ -30,6 +42,7 @@ type CandidateVotes struct {
 	Votes       int    `json:"votes"`
 }
 
+// Takes a slice of candidates and votes and efficiently puts them into a []CandidateVotes type
 func MergeCandidatesAndVotes(candidates []Candidate, votes []Vote) []CandidateVotes {
 	voteMap := make(map[int]int)
 
@@ -51,6 +64,7 @@ func MergeCandidatesAndVotes(candidates []Candidate, votes []Vote) []CandidateVo
 	return candidateVotes
 }
 
+// This is what the API will input into the database to generate a Election
 type ElectionRequest struct {
 	Start      string             `json:"start"`
 	End        string             `json:"end"`
@@ -58,6 +72,7 @@ type ElectionRequest struct {
 	Candidates []CandidateRequest `json:"candidates"`
 }
 
+// Ensures that the ElectionRequest has not blank values and that the date are valid for a new election
 func (req ElectionRequest) Validate() error {
 	if req.Start == "" {
 		return fmt.Errorf("start is empty")
@@ -81,7 +96,7 @@ func (req ElectionRequest) Validate() error {
 		return fmt.Errorf("failed to decode end date: %w", err)
 	}
 
-	if startDate.Unix() > time.Now().Unix() {
+	if startDate.Unix() < time.Now().Unix() {
 		return fmt.Errorf("attempted to create an election that starts in the past")
 	}
 

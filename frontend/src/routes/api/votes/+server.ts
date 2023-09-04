@@ -13,7 +13,7 @@ export const POST: RequestHandler = async (e) => {
     }
 
     console.log("/votes: ", e.request)
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 

@@ -13,7 +13,7 @@ export const GET: RequestHandler = async (e) => {
         return new Response(JSON.stringify(NewError("invalid credentials")), { status: 401 })
     }
     
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 

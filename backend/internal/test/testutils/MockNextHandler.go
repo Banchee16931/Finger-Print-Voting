@@ -7,6 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+/*
+*	This file contains a mock handler that can be used when testing API Middleware
+*	This file itself is only used in testing
+ */
+
 type MockNextHandler struct {
 	request *http.Request
 	called  bool

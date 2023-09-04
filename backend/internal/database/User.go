@@ -78,13 +78,13 @@ func (client *Client) GetUser(username string) (types.User, error) {
 	return user, nil
 }
 
-func (client *Client) DeleteVoter(username string) error {
-	_, err := client.db.Exec(`DELETE FROM voter_details WHERE username = $1;`, username)
+func (client *Client) DeleteVoter(tx *sql.Tx, username string) error {
+	_, err := tx.Exec(`DELETE FROM voter_details WHERE username = $1;`, username)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
-	_, err = client.db.Exec(`DELETE FROM users WHERE username = $1;`, username)
+	_, err = tx.Exec(`DELETE FROM users WHERE username = $1;`, username)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

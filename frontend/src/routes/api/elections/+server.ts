@@ -15,7 +15,7 @@ export const POST: RequestHandler = async (e) => {
     }
 
     console.log("POST /elections: ", e.request)
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
@@ -24,7 +24,7 @@ export const POST: RequestHandler = async (e) => {
 
 export const GET: RequestHandler = async (e) => {
     console.log("GET /elections: ", e.request)
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 

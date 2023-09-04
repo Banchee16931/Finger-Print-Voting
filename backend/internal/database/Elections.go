@@ -159,7 +159,8 @@ func (client *Client) GetElectionByLocation(location string) ([]types.Election, 
 func (client *Client) GetCandidates(electionID int) ([]types.Candidate, error) {
 	log.Printf("Getting candidates")
 
-	rows, err := client.db.Query(`SELECT candidate_id, election_id, first_name, last_name, party, party_colour, photo FROM candidates;`)
+	rows, err := client.db.Query(`SELECT candidate_id, election_id, first_name, last_name, party, party_colour, photo FROM candidates WHERE election_id=$1;`,
+		electionID)
 	if err != nil {
 		return []types.Candidate{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

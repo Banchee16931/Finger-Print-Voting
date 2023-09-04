@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS result (
     first_name text NOT NULL,
     last_name text NOT NULL,
     party text NOT NULL,
+    party_colour text NOT NULL,
     votes int NOT NULL,
     FOREIGN KEY (election_id) REFERENCES elections(election_id)
 );

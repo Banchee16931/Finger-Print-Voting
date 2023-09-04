@@ -13,6 +13,8 @@
     export let data: PageData
     $: election = data.election
 
+    $: console.log("Elections; ", election)
+
     let hideVoteDialog = true
 
     let working = false
@@ -129,7 +131,7 @@
 
     .registered-animation {
         position: absolute; 
-        top: 250px; 
+        top: 100px; 
         left: 0;
         right: 0;
         z-index: 100;

@@ -7,6 +7,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+/*
+*	This file contains all the mock implementations of the database interface
+*	This file itself is only used in testing
+ */
+
 type MockDB struct {
 	mock.Mock
 }
@@ -101,13 +106,13 @@ func (client *MockDB) GetUser(username string) (types.User, error) {
 	return call.Get(0).(types.User), call.Error(1)
 }
 
-func (client *MockDB) DeleteVoter(username string) error {
-	call := client.Called(username)
+func (client *MockDB) DeleteVoter(tx *sql.Tx, username string) error {
+	call := client.Called(tx, username)
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreVote(vote types.Vote) error {
-	call := client.Called(vote)
+func (client *MockDB) StoreVote(tx *sql.Tx, vote types.Vote) error {
+	call := client.Called(tx, vote)
 	return call.Error(0)
 }
 

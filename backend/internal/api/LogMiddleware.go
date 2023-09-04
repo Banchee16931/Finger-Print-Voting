@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Ouputs some useful logging to the console
 func (srv *Server) MiddlewareLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("")

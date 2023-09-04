@@ -5,7 +5,7 @@ import { NewError, type CommonError } from '$lib/types/CommonError';
 
 export const POST: RequestHandler = async (e) => {
     console.log("/registrations: ", e.request)
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
@@ -29,7 +29,7 @@ export const GET: RequestHandler = async (e) => {
         return new Response(JSON.stringify(NewError("invalid credentials")), { status: 401 })
     }
     
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
