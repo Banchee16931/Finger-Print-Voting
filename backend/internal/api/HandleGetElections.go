@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"finger-print-voting-backend/internal/types"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -69,6 +70,8 @@ func (srv *Server) HandleGetElections(w http.ResponseWriter, r *http.Request) {
 		HTTPError(w, http.StatusNotFound, fmt.Errorf("no elections stored"))
 		return
 	}
+
+	log.Printf("Returned Elections: %v", electionStates)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(&electionStates)

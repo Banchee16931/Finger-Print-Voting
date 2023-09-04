@@ -57,6 +57,8 @@
         return new Date(current.start.replace("-", ",")).getTime() - new Date(prev.start.replace("-", ",")).getTime()
     })
 
+    $: console.log("filtered elections: ", filteredElections)
+
     $: happeningElections = filteredElections.filter((election) => {
         let now = new Date().getTime()
         if (new Date(election.end.replace("-", ",")).getTime() > now) {

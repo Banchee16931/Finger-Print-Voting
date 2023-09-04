@@ -56,6 +56,7 @@ func (client *Client) EnsureValidSchema(schemaLocation string) error {
 }
 
 func (client *Client) Close() error {
+	log.Panicln("DB closed")
 	return client.db.Close()
 }
 
@@ -72,4 +73,8 @@ func (client *Client) DropDBTables() error {
 
 	log.Println("Dropped all tables")
 	return nil
+}
+
+func (client *Client) Raw() *sql.DB {
+	return client.db
 }
