@@ -18,12 +18,14 @@ export const POST: RequestHandler = async (e) => {
                 if (key === "Autherization") {
                     console.log("setting session")
                     e.cookies.set("session", value.trim(), {path:"/"})
+                    
                 }
             }
         )
+        return new Response("", {status: 200})
     }
 
     console.log("after cookies")
     
-    return new Response("", { status: 200});
+    return res;
 }

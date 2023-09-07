@@ -90,7 +90,7 @@
 
             <!-- error message displayed to user -->
             {#if form?.error}
-                <span class="error" style="width: 250px;">{form?.error}</span>
+                <span class="error" style="width: 250px;">Error: {form?.error}</span>
             {/if}
         </form>
     </div>

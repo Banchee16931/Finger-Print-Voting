@@ -8,7 +8,7 @@
     // Text above the file input to describe what it is to the user
     export let label: string | null = null
 
-    let fileStrings: string[] | null = null;
+    let fileStrings: string[] | undefined = undefined;
 
     // Bind to this to get the files that have been selected
     let files: FileList | null = null
@@ -197,9 +197,6 @@
     }
 
     export let value: string | undefined = undefined
-
-
-    $: console.log("value: ", value)
 </script>
 
 <!--
@@ -283,7 +280,7 @@
         <input
             name={name}
             type="text"
-            value={value}
+            bind:value
             {...$$restProps}
             on:change={change}
             on:dragenter

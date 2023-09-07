@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, RequestEvent } from '@sveltejs/kit';
 import { validateLoginRequest, type LoginRequest } from "$lib/types/loginRequest";
-import { NewError, type CommonError } from "$lib/types/CommonError"
+import type { CommonError } from "$lib/types/CommonError"
 import { redirect } from '@sveltejs/kit';
 import { invalidate } from '$app/navigation';
 import type { Candidate, CandidateRequest, Election, ElectionRequest } from '$lib/types';
@@ -28,8 +28,6 @@ export const actions: Actions = {
 
         for (let field of formData) {
             const [key, value] = field
-            console.log("handled key: ", key)
-            console.log("value: ", value)
             switch (key) {
                 case "start": {
                     if (typeof value === "string") {
@@ -60,7 +58,9 @@ export const actions: Actions = {
                     break;
                 }
                 default: {
-                    throw NewError("couldn't process request")
+                    return fail(500, {
+                        error: "invalid data"
+                    });
                 }
             }
         }
@@ -69,7 +69,9 @@ export const actions: Actions = {
             || election.end === null
             || election.location === null
             || candidates === null) {
-            throw NewError("request is missing data")
+            return fail(400, {
+                error: "request is missing data"
+            });
         }
 
         let newElection: ElectionRequest = {

@@ -1,3 +1,5 @@
+import { NewError } from "./CommonError"
+
 export type RegistrationRequest = {
     first_name: string | undefined,
     last_name: string | undefined,
@@ -9,6 +11,7 @@ export type RegistrationRequest = {
 }
 
 export const validateRegistrationRequest = function(req: RegistrationRequest) {
+    console.log("request: ", req)
     if (req.email === undefined 
     || req.first_name === undefined
     || req.last_name === undefined
@@ -17,8 +20,14 @@ export const validateRegistrationRequest = function(req: RegistrationRequest) {
     || req.proof_of_identity === undefined
     || req.fingerprint === undefined
     || req.location === undefined) {
-        return false
+        return NewError("missing data")
     }
 
-    return true
+    if (req.proof_of_identity === "") {
+        return NewError("missing identity of proof")
+    }
+
+    if (req.fingerprint === "") {
+        return NewError("missing fingerprint")
+    }
 }
