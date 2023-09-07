@@ -13,6 +13,8 @@
     export let data: PageData
     $: election = data.election
 
+    $: console.log("Elections; ", election)
+
     let hideVoteDialog = true
 
     let working = false
@@ -38,7 +40,7 @@
     async function  logout(e: Event) {
         await fetch("/api/delete-authorization", { method: "DELETE" })
         invalidateAll()
-        redirect (307, "/")
+        redirect (303, "/")
     }
 </script>
 
@@ -70,7 +72,7 @@
     </Dialog>
 {/if}
 
-<div class="spaced-container">
+<div class="spaced-container body-container">
     <!-- error message displayed to user -->
     {#if form?.error}
         <span class="inPageError" style="width: 250px;">Error: {form?.error}</span>
@@ -83,7 +85,7 @@
     </CardGrid>
 </div>
 {:else}
-    <div class="spaced-container">
+    <div class="spaced-container body-container">
         <div class="center-container registered-animation">
             <TickAnimation start={true} size="10rem;"/>
             <h1>You have Voted!</h1>
@@ -129,7 +131,7 @@
 
     .registered-animation {
         position: absolute; 
-        top: 250px; 
+        top: 100px; 
         left: 0;
         right: 0;
         z-index: 100;

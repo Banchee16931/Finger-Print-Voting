@@ -85,6 +85,18 @@ func StoreCandidates(tx *sql.Tx, electionID int, candidates []types.CandidateReq
 	return nil
 }
 
+func (client *Client) GetElection(electionID int) (types.Election, error) {
+	log.Printf("Getting election: %d", electionID)
+	election := types.Election{}
+	err := client.db.QueryRow(`SELECT election_id, election_start, election_end, authority_location FROM elections WHERE election_id=$1;`,
+		electionID).Scan(&election.ElectionID, &election.Start, &election.End, &election.Location)
+	if err != nil {
+		return types.Election{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+	}
+
+	return election, nil
+}
+
 func (client *Client) GetElections() ([]types.Election, error) {
 	log.Printf("Getting all elections")
 
@@ -112,10 +124,43 @@ func (client *Client) GetElections() ([]types.Election, error) {
 	return elections, nil
 }
 
+func (client *Client) GetElectionByLocation(location string) ([]types.Election, error) {
+	log.Printf("Getting elections from %s", location)
+
+	rows, err := client.db.Query(`SELECT election_id, election_start, election_end, authority_location FROM elections WHERE authority_location=$1;`,
+		location)
+	if err != nil {
+		return []types.Election{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+	}
+
+	elections := []types.Election{}
+
+	for rows.Next() {
+		election := types.Election{}
+
+		if err := rows.Scan(&election.ElectionID, &election.Start, &election.End, &election.Location); err != nil {
+			return []types.Election{}, err
+		}
+
+		if err != nil {
+			return []types.Election{}, err
+		}
+
+		elections = append(elections, election)
+	}
+
+	if err = rows.Err(); err != nil {
+		return []types.Election{}, err
+	}
+
+	return elections, nil
+}
+
 func (client *Client) GetCandidates(electionID int) ([]types.Candidate, error) {
 	log.Printf("Getting candidates")
 
-	rows, err := client.db.Query(`SELECT candidate_id, election_id, first_name, last_name, party, party_colour, photo FROM candidates;`)
+	rows, err := client.db.Query(`SELECT candidate_id, election_id, first_name, last_name, party, party_colour, photo FROM candidates WHERE election_id=$1;`,
+		electionID)
 	if err != nil {
 		return []types.Candidate{}, fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
@@ -138,8 +183,8 @@ func (client *Client) GetCandidates(electionID int) ([]types.Candidate, error) {
 	return candidates, nil
 }
 
-func (client *Client) DeleteCandidates(electionID int) error {
-	_, err := client.db.Exec(`DELETE FROM candidates WHERE election_id = $1;`, electionID)
+func (client *Client) DeleteCandidates(tx *sql.Tx, electionID int) error {
+	_, err := tx.Exec(`DELETE FROM candidates WHERE election_id = $1;`, electionID)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

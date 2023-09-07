@@ -271,13 +271,18 @@ func TestClient_StoreUser(t *testing.T) {
 
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
+
+			mock.ExpectBegin()
+			tx, err := db.Begin()
+			assert.NoError(t, err, "Begin errored")
+
 			// Set up expectations
 			mock.ExpectExec(`INSERT INTO users \(username, encrypted_password, is_admin, first_name, last_name\) VALUES \(\$1, \$2, \$3, \$4, \$5\);`).
 				WithArgs(tc.user.Username, tc.user.Password, tc.user.Admin, tc.user.FirstName, tc.user.LastName).
 				WillReturnResult(tc.mockExecResult)
 
 			// Call the function being tested
-			err = client.StoreUser(tc.user)
+			err = client.StoreUser(tx, tc.user)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedError, "Incorrect error type")

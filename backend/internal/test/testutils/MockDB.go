@@ -1,10 +1,16 @@
 package testutils
 
 import (
+	"database/sql"
 	"finger-print-voting-backend/internal/types"
 
 	"github.com/stretchr/testify/mock"
 )
+
+/*
+*	This file contains all the mock implementations of the database interface
+*	This file itself is only used in testing
+ */
 
 type MockDB struct {
 	mock.Mock
@@ -20,13 +26,23 @@ func (client *MockDB) GetElections() ([]types.Election, error) {
 	return call.Get(0).([]types.Election), call.Error(1)
 }
 
-func (client *MockDB) GetCandidates(electionID int) ([]types.Candidate, error) {
+func (client *MockDB) GetElection(electionID int) (types.Election, error) {
 	call := client.Called(electionID)
-	return call.Get(0).([]types.Candidate), call.Error(0)
+	return call.Get(0).(types.Election), call.Error(1)
 }
 
-func (client *MockDB) DeleteCandidates(electionID int) error {
+func (client *MockDB) GetElectionByLocation(location string) ([]types.Election, error) {
+	call := client.Called(location)
+	return call.Get(0).([]types.Election), call.Error(1)
+}
+
+func (client *MockDB) GetCandidates(electionID int) ([]types.Candidate, error) {
 	call := client.Called(electionID)
+	return call.Get(0).([]types.Candidate), call.Error(1)
+}
+
+func (client *MockDB) DeleteCandidates(tx *sql.Tx, electionID int) error {
+	call := client.Called(tx, electionID)
 	return call.Error(0)
 }
 
@@ -40,13 +56,18 @@ func (client *MockDB) GetRegistrants() ([]types.Registrant, error) {
 	return call.Get(0).([]types.Registrant), call.Error(1)
 }
 
-func (client *MockDB) DeleteRegistrant(registrantID int) error {
+func (client *MockDB) GetRegistrant(registrantID int) (types.Registrant, error) {
 	call := client.Called(registrantID)
+	return call.Get(0).(types.Registrant), call.Error(1)
+}
+
+func (client *MockDB) DeleteRegistrant(tx *sql.Tx, registrantID int) error {
+	call := client.Called(tx, registrantID)
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreResult(result types.ResultRequest) error {
-	call := client.Called(result)
+func (client *MockDB) StoreResult(tx *sql.Tx, result types.ResultRequest) error {
+	call := client.Called(tx, result)
 	return call.Error(0)
 }
 
@@ -65,13 +86,13 @@ func (client *MockDB) SetupSchema() error {
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreUser(user types.User) error {
-	call := client.Called(user)
+func (client *MockDB) StoreUser(tx *sql.Tx, user types.User) error {
+	call := client.Called(tx, user)
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreVoter(voter types.Voter) error {
-	call := client.Called(voter)
+func (client *MockDB) StoreVoter(tx *sql.Tx, voter types.Voter) error {
+	call := client.Called(tx, voter)
 	return call.Error(0)
 }
 
@@ -85,13 +106,13 @@ func (client *MockDB) GetUser(username string) (types.User, error) {
 	return call.Get(0).(types.User), call.Error(1)
 }
 
-func (client *MockDB) DeleteVoter(username string) error {
-	call := client.Called(username)
+func (client *MockDB) DeleteVoter(tx *sql.Tx, username string) error {
+	call := client.Called(tx, username)
 	return call.Error(0)
 }
 
-func (client *MockDB) StoreVote(vote types.Vote) error {
-	call := client.Called(vote)
+func (client *MockDB) StoreVote(tx *sql.Tx, vote types.Vote) error {
+	call := client.Called(tx, vote)
 	return call.Error(0)
 }
 
@@ -100,7 +121,12 @@ func (client *MockDB) GetVotes(electionID int) ([]types.Vote, error) {
 	return call.Get(0).([]types.Vote), call.Error(1)
 }
 
-func (client *MockDB) DeleteVotes(electionID int) error {
-	call := client.Called(electionID)
+func (client *MockDB) DeleteVotes(tx *sql.Tx, electionID int) error {
+	call := client.Called(tx, electionID)
 	return call.Error(0)
+}
+
+func (client *MockDB) Begin() (*sql.Tx, error) {
+	call := client.Called()
+	return call.Get(0).(*sql.Tx), call.Error(1)
 }

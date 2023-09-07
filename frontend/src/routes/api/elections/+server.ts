@@ -15,34 +15,20 @@ export const POST: RequestHandler = async (e) => {
     }
 
     console.log("POST /elections: ", e.request)
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
-    let res = await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
-    console.log("response: ", res)
-    if (!res.ok) {
-        let err: CommonError = await res.json()
-        throw err
-    }
-
-    return new Response("", { status: 201 })
+    return await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
 };
 
 export const GET: RequestHandler = async (e) => {
     console.log("GET /elections: ", e.request)
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
-    let res = await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
-    console.log("response: ", res)
-    if (!res.ok) {
-        let err: CommonError = await res.json()
-        throw err
-    }
-
-    return new Response("", { status: 201 })
+    return await e.fetch(`${BACKEND_ENDPOINT}/elections`, e.request)
 };
 
 

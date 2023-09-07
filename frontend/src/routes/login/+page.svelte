@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
     import Hero from "../../lib/components/Hero.svelte"
     import TextInput from "../../lib/components/TextInput.svelte"
+    import type { ActionData } from "./$types";
 
-    export let form;
+    /** @type {import('./$types').ActionData} */
+    export let form: ActionData;
 </script>
 
 <Hero>
@@ -10,7 +12,7 @@
         Login
     </h1>
 </Hero>
-<div class="center-container spaced-container">
+<div class="center-container spaced-container body-container">
     <form class="form card" method="POST" action="?/login">
         <span class="circle-one"/>
         <span class="circle-two"/>
@@ -21,7 +23,7 @@
         
         <button class="button button-background-color-primary color-text-inverted" type="submit">Login</button>
         {#if form?.error}
-            <span class="error" style="width: 250px;">{form?.error}</span>
+            <span class="error" style="width: 250px;">Error: {form?.error}</span>
         {/if}
     </form>
 </div>

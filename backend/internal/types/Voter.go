@@ -1,5 +1,6 @@
 package types
 
+// This is what the database returned when it gets voters
 type Voter struct {
 	User               // Voters are also users
 	PhoneNo     string `json:"phone_no"`

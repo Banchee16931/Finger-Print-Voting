@@ -1,10 +1,9 @@
 import type { RequestHandler } from './$types';
 import { BACKEND_ENDPOINT } from '$env/static/private';
 import { mockPath } from "../mock/mockEndpoint";
-import { NewError } from '$lib/types/CommonError';
+import { NewError, type CommonError } from '$lib/types/CommonError';
 
-export const GET: RequestHandler = async (e) => {
-    console.log("/user")
+export const POST: RequestHandler = async (e) => {
     let authorization = e.cookies.get("session")
     if (authorization) {
         console.log("autherisation exists")
@@ -12,13 +11,11 @@ export const GET: RequestHandler = async (e) => {
     } else {
         return new Response(JSON.stringify(NewError("invalid credentials")), { status: 401 })
     }
-    
-    if (import.meta.env.DEV) {
+
+    console.log("/votes: ", e.request)
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
-    let res = await e.fetch(`${BACKEND_ENDPOINT}/user`, e.request)
-    console.log("user response: ", res)
-
-    return res
+    return await e.fetch(`${BACKEND_ENDPOINT}/votes`, e.request)
 };

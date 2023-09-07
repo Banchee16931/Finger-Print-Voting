@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Footer from "$lib/components/Footer.svelte";
     import Header from "../lib/components/Header.svelte"
     import "../lib/scss/styling.scss";
 	import type { LayoutData } from "./$types";
@@ -19,6 +20,7 @@
         <Header bind:resetInactivityTimer={resetTimer} userDetails={data.user}/>
     {/if}
     <slot/>
+    <Footer/>
 </div>
 
 <style>

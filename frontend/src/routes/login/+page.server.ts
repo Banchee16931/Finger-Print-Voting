@@ -1,7 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, RequestEvent } from '@sveltejs/kit';
 import { validateLoginRequest, type LoginRequest } from "$lib/types/loginRequest";
-import { NewError, type CommonError } from "$lib/types/CommonError"
+import type { CommonError } from "$lib/types/CommonError"
 import { redirect } from '@sveltejs/kit';
 import { invalidate } from '$app/navigation';
 
@@ -32,37 +32,38 @@ export const actions: Actions = {
                     break;
                 }
                 default: {
-                    throw NewError("couldn't process request")
+                    return fail(500, {
+                        error: "missing required data"
+                    });
                 }
             }
         })
 
         if (!validateLoginRequest(loginRequest)) {
-            throw NewError("request is missing data")
-        }
-
-        let failure: string | null = null
-        let failureStatus: number = 500
-
-        await e.fetch("/api/login", {
-            method: "POST",
-            body: JSON.stringify(loginRequest)
-        }).then(async (res) => {
-            if (!res.ok) {
-                let err: CommonError = await res.json()
-
-                failureStatus = 400
-                failure = err.message
-            }
-        }).catch((err: CommonError) => {
-            failureStatus = 400
-            failure = err.message
-        })
-
-        if (failure) {
-            return fail(failureStatus, {
-				error: failure
+            return fail(500, {
+				error: "missing required data"
 			});
         }
+
+        let res = await e.fetch("/api/login", {
+            method: "POST",
+            body: JSON.stringify(loginRequest)
+        });
+
+        if (res && !res.ok) {
+            if (res.status === 401) {
+                return fail(401, {
+                    error: "invalid credentials"
+                });
+            }
+
+            let err: CommonError = await res.json()
+
+            return fail(res.status, {
+				error: err.message
+			});
+        }
+
+        return {thing: true}
     },
 };

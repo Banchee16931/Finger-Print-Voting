@@ -1,4 +1,4 @@
-<div class="spaced-container">
+<div class="spaced-container body-container">
     <h1>Style Example Page</h1>
     <p>
         This page shows a ton of different styling options available.

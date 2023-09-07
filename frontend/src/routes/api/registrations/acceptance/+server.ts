@@ -14,9 +14,10 @@ export const POST: RequestHandler = async (e) => {
         return new Response(JSON.stringify(NewError("invalid credentials")), { status: 401 })
     }
     
+    console.log("registrations/acceptance")
     
     let res:Response
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         res =  await e.fetch(mockPath(e.request.url), e.request)
     } else {
         res = await e.fetch(`${BACKEND_ENDPOINT}/registrations/acceptance`, e.request)

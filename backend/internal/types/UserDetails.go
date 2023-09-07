@@ -1,5 +1,6 @@
 package types
 
+// A user without the password information
 type UserDetails struct {
 	Username  string `json:"username"`
 	Admin     bool   `json:"admin"`
@@ -7,6 +8,7 @@ type UserDetails struct {
 	LastName  string `json:"last_name"`
 }
 
+// Transfers the data from a User into the UserDetails
 func (res UserDetails) FromUser(user User) UserDetails {
 	res.Username = user.Username
 	res.Admin = user.Admin

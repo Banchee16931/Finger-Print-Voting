@@ -154,7 +154,7 @@
     </Card>
 </Dialog>
 
-<div class="center-container spaced-container" style="margin-bottom: 30px;">
+<div class="center-container spaced-container body-container" style="margin-bottom: 30px;">
     <h3>Candidates</h3>
     <CardGrid style="Width: 100%; margin-top: 10px;">
         {#each candidates as candidate, id}

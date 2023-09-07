@@ -217,11 +217,15 @@ func TestClient_DeleteRegistrant(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			mock.ExpectBegin()
+			tx, err := db.Begin()
+			assert.NoError(t, err, "failed to begin transaction")
+
 			// Set up expectations for db.Exec
 			tc.mockExpectation(mock)
 
 			// Call the function being tested
-			err = client.DeleteRegistrant(tc.registrantID)
+			err = client.DeleteRegistrant(tx, tc.registrantID)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedError, "Incorrect error type")

@@ -11,15 +11,15 @@ export const load = (async (e) => {
     }
 
     console.log("username: ", parent.user.username)
-    console.log("path: ", `/api/elections/${parent.user.username}`)
-    let response = await e.fetch(`/api/elections/${parent.user.username}`, { method: "GET" })
+    console.log("path: ", `/api/elections/user`)
+    let response = await e.fetch(`/api/elections/user`, { method: "GET" })
     let election: Election | null = null
     if (!response.ok) {
         let err: CommonError = await response.json()
 
-        if (err.metadata.noUserAccount !== true) {
+        if (response.status == 401) {
             throw NewError(`getting current election failed: ${response.statusText}, ${await response.text()}`)
-        }
+        } 
     } else {
         election = await response.json()
     }
@@ -95,7 +95,7 @@ export const actions: Actions = {
         let failure: string | null = null
         let failureStatus: number = 500
 
-        let res = await e.fetch("/api/vote", { 
+        let res = await e.fetch("/api/votes", { 
             method:"POST", 
             body: JSON.stringify(voteRequest), 
             headers: { 'content-type': 'application/json'} ,

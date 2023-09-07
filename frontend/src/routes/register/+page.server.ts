@@ -2,10 +2,8 @@ import { fail } from '@sveltejs/kit';
 import type { RegistrationRequest } from '$lib/types';
 import { validateRegistrationRequest } from '$lib/types';
 import type { Actions, RequestEvent } from '@sveltejs/kit';
-import { NewError, errorPrefix, unidentifiedErrorPrefix } from '$lib/types/CommonError';
+import { errorPrefix } from '$lib/types/CommonError';
 import type { CommonError } from '$lib/types/CommonError';
-
-const genericErrorMessage = "failed to submit registration request"
 
 /** @type {import('./$types').Actions} */
 export const actions: Actions = {
@@ -18,6 +16,15 @@ export const actions: Actions = {
             const [key, value] = field
 
             console.log("key: ", key)
+            console.log("value: ", value)
+
+            if (value === undefined) {
+                console.log(errorPrefix, `${key} is not set`)
+                return fail(400, {
+                    error: `${key} is not set`,
+                    registered: false
+                });
+            }
 
             if (typeof value === "string") {
                 data.append(key, value)
@@ -68,21 +75,28 @@ export const actions: Actions = {
                 }
                 default: {
                     console.log(errorPrefix, "form contained unexpected data")
-                    throw NewError(genericErrorMessage)
+                    return fail(400, {
+                        error: "missing details",
+                        registered: false
+                    });
                 }
             }
         })
 
         // checks all the different attributes are filled
-        if (!validateRegistrationRequest(registrationRequest)) {
+        let result = validateRegistrationRequest(registrationRequest)
+        if (result !== undefined) {
             console.log("data given: ", registrationRequest)
-            throw NewError("missing data in registration")
+            return fail(400, {
+				error: result.message,
+                registered: false
+			});
         }
 
         let failure: string | null = null
         let failureStatus: number = 500
 
-        let res = await e.fetch("/api/register", { 
+        let res = await e.fetch("/api/registrations", { 
             method:"POST", 
             body: JSON.stringify(registrationRequest), 
             headers: { 'content-type': 'application/json'} ,
@@ -108,12 +122,14 @@ export const actions: Actions = {
             failure = err.message
         }
 
-        if (typeof failure === "string") {
+        if (failure !== null) {
             return fail(failureStatus, {
 				error: failure,
                 registered: false
 			});
         }
+
+        console.log("end")
 
         return { registered: true }
     }

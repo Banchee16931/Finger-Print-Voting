@@ -59,6 +59,11 @@ func TestClient_StoreVote(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// creating transaction
+			mock.ExpectBegin()
+			tx, err := db.Begin()
+			assert.NoError(t, err, "failed to begin transaction")
+
 			// Set up expectations for db.Exec
 			mock.ExpectExec(`INSERT INTO votes (username, election_id, candidate_id) VALUES ($1, $2, $3);`).
 				WithArgs(tc.inputVote.Username, tc.inputVote.ElectionID, tc.inputVote.CandidateID).
@@ -66,7 +71,7 @@ func TestClient_StoreVote(t *testing.T) {
 				WillReturnError(tc.mockExecErr)
 
 			// Call the function being tested
-			err = client.StoreVote(tc.inputVote)
+			err = client.StoreVote(tx, tc.inputVote)
 
 			// Check the returned errorS
 			assert.ErrorIs(t, err, tc.expectedErr, "Incorrect error")
@@ -191,6 +196,11 @@ func TestClient_DeleteVotes(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// mock transaction begin
+			mock.ExpectBegin()
+			tx, err := client.Begin()
+			assert.NoError(t, err, "begin returned an error")
+
 			// Set up expectations for db.Exec
 			mock.ExpectExec(`DELETE FROM votes WHERE election_id=$1;`).
 				WithArgs(tc.electionID).
@@ -198,7 +208,7 @@ func TestClient_DeleteVotes(t *testing.T) {
 				WillReturnError(tc.mockExecErr)
 
 			// Call the function being tested
-			err = client.DeleteVotes(tc.electionID)
+			err = client.DeleteVotes(tx, tc.electionID)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedErr, "Incorrect error")

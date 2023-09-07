@@ -57,6 +57,8 @@
         return new Date(current.start.replace("-", ",")).getTime() - new Date(prev.start.replace("-", ",")).getTime()
     })
 
+    $: console.log("filtered elections: ", filteredElections)
+
     $: happeningElections = filteredElections.filter((election) => {
         let now = new Date().getTime()
         if (new Date(election.end.replace("-", ",")).getTime() > now) {
@@ -90,7 +92,7 @@
     </div>
 </Hero>
 
-<div class="spaced-container" style="margin-top: 10px;">
+<div class="spaced-container body-container" style="margin-top: 10px;">
     {#if happeningElections.length > 0}
     <h3>Ongoing Elections</h3>
     <ElectionList elections={happeningElections}/>

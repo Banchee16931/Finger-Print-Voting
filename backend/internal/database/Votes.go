@@ -1,14 +1,15 @@
 package database
 
 import (
+	"database/sql"
 	"finger-print-voting-backend/internal/cerr"
 	"finger-print-voting-backend/internal/types"
 	"fmt"
 	"log"
 )
 
-func (client *Client) StoreVote(vote types.Vote) error {
-	_, err := client.db.Exec(`INSERT INTO votes (username, election_id, candidate_id)
+func (client *Client) StoreVote(tx *sql.Tx, vote types.Vote) error {
+	_, err := tx.Exec(`INSERT INTO votes (username, election_id, candidate_id)
     VALUES ($1, $2, $3);`, vote.Username, vote.ElectionID, vote.CandidateID)
 
 	if err != nil {
@@ -44,8 +45,8 @@ func (client *Client) GetVotes(electionID int) ([]types.Vote, error) {
 	return votes, nil
 }
 
-func (client *Client) DeleteVotes(electionID int) error {
-	_, err := client.db.Exec(`DELETE FROM votes WHERE election_id=$1;`, electionID)
+func (client *Client) DeleteVotes(tx *sql.Tx, electionID int) error {
+	_, err := tx.Exec(`DELETE FROM votes WHERE election_id=$1;`, electionID)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

@@ -251,7 +251,8 @@ func TestClient_GetCandidates(t *testing.T) {
 			client := database.NewClientFromDatabase(db)
 
 			// Set up expectations for db.Query
-			mock.ExpectQuery(`SELECT candidate_id, election_id, first_name, last_name, party, party_colour, photo FROM candidates;`).
+			mock.ExpectQuery(`SELECT candidate_id, election_id, first_name, last_name, party, party_colour, photo FROM candidates WHERE election_id=$1;`).
+				WithArgs(1).
 				WillReturnRows(tc.mockRows)
 
 			// Call the function being tested
@@ -316,11 +317,16 @@ func TestClient_DeleteCandidates(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// mock transaction begin
+			mock.ExpectBegin()
+			tx, err := db.Begin()
+			assert.NoError(t, err, "begin returned an error")
+
 			// Set up expectations for db.Exec
 			tc.mockExpectation(mock)
 
 			// Call the function being tested
-			err = client.DeleteCandidates(tc.electionID)
+			err = client.DeleteCandidates(tx, tc.electionID)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedError, "Incorrect error type")

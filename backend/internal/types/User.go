@@ -1,5 +1,6 @@
 package types
 
+// This is what the database returned when getting users
 type User struct {
 	Username  string `json:"username"` // PK
 	Password  string `json:"password"`

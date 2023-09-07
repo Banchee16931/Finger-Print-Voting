@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"finger-print-voting-backend/internal/cerr"
 	"finger-print-voting-backend/internal/types"
 	"fmt"
@@ -46,8 +47,20 @@ func (client *Client) GetRegistrants() ([]types.Registrant, error) {
 	return registrants, nil
 }
 
-func (client *Client) DeleteRegistrant(registrantID int) error {
-	_, err := client.db.Exec(`DELETE FROM registrants WHERE registrant_id = $1;`, registrantID)
+func (client *Client) GetRegistrant(registrantID int) (types.Registrant, error) {
+	registrant := types.Registrant{}
+	if err := client.db.QueryRow(
+		`SELECT registrant_id, first_name, last_name, email, phone_no, fingerprint, proof, authority_location FROM registrants;`).Scan(
+		&registrant.RegistrantID, &registrant.FirstName, &registrant.LastName, &registrant.Email, &registrant.PhoneNo,
+		&registrant.Fingerprint, &registrant.ProofOfIdentity, &registrant.Location); err != nil {
+		return types.Registrant{}, err
+	}
+
+	return registrant, nil
+}
+
+func (client *Client) DeleteRegistrant(tx *sql.Tx, registrantID int) error {
+	_, err := tx.Exec(`DELETE FROM registrants WHERE registrant_id = $1;`, registrantID)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

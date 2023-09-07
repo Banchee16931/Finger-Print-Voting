@@ -3,7 +3,7 @@ import { BACKEND_ENDPOINT } from '$env/static/private';
 import { mockPath } from "../mock/mockEndpoint";
 
 export const POST: RequestHandler = async (e) => {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.PROD) {
         return await e.fetch(mockPath(e.request.url), e.request)
     }
 
@@ -18,12 +18,14 @@ export const POST: RequestHandler = async (e) => {
                 if (key === "Autherization") {
                     console.log("setting session")
                     e.cookies.set("session", value.trim(), {path:"/"})
+                    
                 }
             }
         )
+        return new Response("", {status: 200})
     }
 
     console.log("after cookies")
     
-    return new Response("", { status: 200});
+    return res;
 }

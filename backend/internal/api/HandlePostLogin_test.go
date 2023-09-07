@@ -19,7 +19,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestHandleLogin(t *testing.T) {
+// Tests that HandleLogin correctly checks a login request and then returns a valid JWT
+func TestHandlePostLogin(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -51,8 +52,8 @@ func TestHandleLogin(t *testing.T) {
 	assert.NoError(t, err, "failed to marshal input")
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewReader(inputBody))
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -75,7 +76,8 @@ func TestHandleLogin(t *testing.T) {
 	assert.Regexp(t, regexp.MustCompile("^(?i)Bearer {(.+)(?-i)}"), strings.TrimSpace(split[1]), "bearer was not in correct format")
 }
 
-func TestHandleLogin_InvalidRequestBody(t *testing.T) {
+// Tests that if an invalid JSON body is sent to the HandleLogin endpoint it will return a Bad Request status
+func TestHandlePostLogin_InvalidRequestBody(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testSecret := "test secret"
@@ -86,18 +88,11 @@ func TestHandleLogin_InvalidRequestBody(t *testing.T) {
 	srv.WithDBClient(&db)
 	srv.WithPasswordSecret(testSecret)
 
-	input := struct {
-		Thisisinvalid string `json:"thisisinvalid"`
-	}{
-		Thisisinvalid: "invalid",
-	}
-
-	inputBody, err := json.Marshal(input)
-	assert.NoError(t, err, "failed to marshal input")
+	invalidJSON := []byte{}
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewReader(invalidJSON))
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -106,9 +101,65 @@ func TestHandleLogin_InvalidRequestBody(t *testing.T) {
 
 	sessionSet := w.Header().Get("Set-Cookie")
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
+
+	AssertHTTPErrorResponse(t, res.Body)
 }
 
-func TestHandleLogin_UserNotInDB(t *testing.T) {
+// Tests that if an input that doesn't pass the validation for a login request will return a Bad Request status
+func TestHandlePostLogin_InvalidInputError(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name     string
+		username string
+		password string
+	}{
+		{name: "invalid password", username: "", password: "valid_password"},
+
+		{name: "invalid username", username: "valid_username", password: ""},
+	}
+
+	for i := 0; i < len(cases); i++ {
+		tc := cases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			// Assign
+			testUsername := tc.username
+			testPass := tc.password
+			testSecret := "test secret"
+
+			db := testutils.MockDB{}
+
+			srv := api.NewServer()
+			srv.WithDBClient(&db)
+			srv.WithPasswordSecret(testSecret)
+
+			input := types.LoginRequest{
+				Username: testUsername,
+				Password: testPass,
+			}
+
+			inputBody, err := json.Marshal(input)
+			assert.NoError(t, err, "failed to marshal input")
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewReader(inputBody))
+			srv.HandlePostLogin(w, req)
+
+			// Assert
+			res := w.Result()
+
+			assert.Equal(t, http.StatusBadRequest, res.StatusCode, "incorrect status code")
+
+			sessionSet := w.Header().Get("Set-Cookie")
+			assert.Empty(t, sessionSet, "set cookie header was not empty")
+
+			AssertHTTPErrorResponse(t, res.Body)
+		})
+	}
+}
+
+// Tests that HandleLogin reports an error if the user it is trying to login to doesn't exist
+func TestHandlePostLogin_UserNotInDB(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -132,8 +183,8 @@ func TestHandleLogin_UserNotInDB(t *testing.T) {
 	assert.NoError(t, err, "failed to marshal input")
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewReader(inputBody))
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -142,9 +193,12 @@ func TestHandleLogin_UserNotInDB(t *testing.T) {
 
 	sessionSet := w.Header().Get("Set-Cookie")
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
+
+	AssertHTTPErrorResponse(t, res.Body)
 }
 
-func TestHandleLogin_IncorrectPassword(t *testing.T) {
+// Tests that a login request is rejects if the password for that account is incorrect
+func TestHandlePostLogin_IncorrectPassword(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -174,8 +228,8 @@ func TestHandleLogin_IncorrectPassword(t *testing.T) {
 	assert.NoError(t, err, "failed to marshal input")
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewReader(inputBody))
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -184,9 +238,12 @@ func TestHandleLogin_IncorrectPassword(t *testing.T) {
 
 	sessionSet := w.Header().Get("Set-Cookie")
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
+
+	AssertHTTPErrorResponse(t, res.Body)
 }
 
-func TestHandleLogin_DBError(t *testing.T) {
+// Tests that if the Database returns an error it is correctly propegated to the requester
+func TestHandlePostLogin_DBError(t *testing.T) {
 	t.Parallel()
 	// Assign
 	testUsername := "user"
@@ -210,8 +267,8 @@ func TestHandleLogin_DBError(t *testing.T) {
 	assert.NoError(t, err, "failed to marshal input")
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/test", bytes.NewReader(inputBody))
-	srv.HandleLogin(w, req)
+	req := httptest.NewRequest(http.MethodPost, "/test", bytes.NewReader(inputBody))
+	srv.HandlePostLogin(w, req)
 
 	// Assert
 	res := w.Result()
@@ -220,4 +277,6 @@ func TestHandleLogin_DBError(t *testing.T) {
 
 	sessionSet := w.Header().Get("Set-Cookie")
 	assert.Empty(t, sessionSet, "set cookie header was not empty")
+
+	AssertHTTPErrorResponse(t, res.Body)
 }

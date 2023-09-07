@@ -1,5 +1,6 @@
 package types
 
+// This is what the database returned when getting registrants
 type Registrant struct {
 	RegistrantID    int    `json:"registrant_id"` // PK
 	FirstName       string `json:"first_name"`

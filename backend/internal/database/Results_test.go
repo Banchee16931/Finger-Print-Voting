@@ -24,11 +24,12 @@ func TestClient_StoreResult(t *testing.T) {
 		{
 			name: "happy_path",
 			inputResult: types.ResultRequest{
-				ElectionID: 1,
-				FirstName:  "John",
-				LastName:   "Doe",
-				Party:      "Independent",
-				Votes:      100,
+				ElectionID:  1,
+				FirstName:   "John",
+				LastName:    "Doe",
+				Party:       "Independent",
+				PartyColour: "#ff000",
+				Votes:       100,
 			},
 			mockExecErr: nil, // No error when executing the query
 			expectedErr: nil,
@@ -36,11 +37,12 @@ func TestClient_StoreResult(t *testing.T) {
 		{
 			name: "database_error",
 			inputResult: types.ResultRequest{
-				ElectionID: 2,
-				FirstName:  "Jane",
-				LastName:   "Smith",
-				Party:      "Democratic",
-				Votes:      200,
+				ElectionID:  2,
+				FirstName:   "Jane",
+				LastName:    "Smith",
+				Party:       "Democratic",
+				PartyColour: "#ff000",
+				Votes:       200,
 			},
 			mockExecErr: errors.New("database error"), // Simulate a database error
 			expectedErr: cerr.ErrDB,                   // Expect the cerr.ErrDB error directly
@@ -63,14 +65,19 @@ func TestClient_StoreResult(t *testing.T) {
 			// Create a new Client with the mock database connection
 			client := database.NewClientFromDatabase(db)
 
+			// mock transaction begin
+			mock.ExpectBegin()
+			tx, err := db.Begin()
+			assert.NoError(t, err, "begin returned an error")
+
 			// Set up expectations for db.Exec
-			mock.ExpectExec(`INSERT INTO result (election_id, first_name, last_name, party, votes) VALUES ($1, $2, $3, $4, $5);`).
-				WithArgs(tc.inputResult.ElectionID, tc.inputResult.FirstName, tc.inputResult.LastName, tc.inputResult.Party, tc.inputResult.Votes).
+			mock.ExpectExec(`INSERT INTO result (election_id, first_name, last_name, party, party_colour, votes) VALUES ($1, $2, $3, $4, $5, $6);`).
+				WithArgs(tc.inputResult.ElectionID, tc.inputResult.FirstName, tc.inputResult.LastName, tc.inputResult.Party, tc.inputResult.PartyColour, tc.inputResult.Votes).
 				WillReturnResult(sqlmock.NewResult(1, 1)).
 				WillReturnError(tc.mockExecErr)
 
 			// Call the function being tested
-			err = client.StoreResult(tc.inputResult)
+			err = client.StoreResult(tx, tc.inputResult)
 
 			// Check the returned error
 			assert.ErrorIs(t, err, tc.expectedErr, "Incorrect error")
@@ -95,25 +102,27 @@ func TestClient_GetResults(t *testing.T) {
 		{
 			name:       "happy_path",
 			electionID: 1,
-			mockRows: sqlmock.NewRows([]string{"result_id", "election_id", "first_name", "last_name", "party", "votes"}).
-				AddRow(1, 1, "John", "Doe", "Independent", 100).
-				AddRow(2, 1, "Jane", "Smith", "Green", 200),
+			mockRows: sqlmock.NewRows([]string{"result_id", "election_id", "first_name", "last_name", "party", "party_colour", "votes"}).
+				AddRow(1, 1, "John", "Doe", "Independent", "#ff000", 100).
+				AddRow(2, 1, "Jane", "Smith", "Green", "#ffff0", 200),
 			expectedResults: []types.Result{
 				{
-					ResultID:   1,
-					ElectionID: 1,
-					FirstName:  "John",
-					LastName:   "Doe",
-					Party:      "Independent",
-					Votes:      100,
+					ResultID:    1,
+					ElectionID:  1,
+					FirstName:   "John",
+					LastName:    "Doe",
+					Party:       "Independent",
+					PartyColour: "#ff000",
+					Votes:       100,
 				},
 				{
-					ResultID:   2,
-					ElectionID: 1,
-					FirstName:  "Jane",
-					LastName:   "Smith",
-					Party:      "Green",
-					Votes:      200,
+					ResultID:    2,
+					ElectionID:  1,
+					FirstName:   "Jane",
+					LastName:    "Smith",
+					Party:       "Green",
+					PartyColour: "#ffff0",
+					Votes:       200,
 				},
 			},
 			expectedError: nil,
@@ -144,7 +153,7 @@ func TestClient_GetResults(t *testing.T) {
 			client := database.NewClientFromDatabase(db)
 
 			// Set up expectations for db.Query
-			mock.ExpectQuery(`SELECT result_id, election_id, first_name, last_name, party, votes FROM result WHERE election_id=$1;`).
+			mock.ExpectQuery(`SELECT result_id, election_id, first_name, last_name, party, party_colour, votes FROM result WHERE election_id=$1;`).
 				WithArgs(tc.electionID).
 				WillReturnRows(tc.mockRows)
 

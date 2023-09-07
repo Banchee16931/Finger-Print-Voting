@@ -20,6 +20,7 @@ type DBConfig struct {
 	Server   string
 }
 
+// loads the config from the .env file
 func Load() RuntimeConfig {
 	codebaseLoc, err := os.Getwd()
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func (client *Client) StoreUser(user types.User) error {
+func (client *Client) StoreUser(tx *sql.Tx, user types.User) error {
 	_, err := client.db.Exec(`INSERT INTO users (username, encrypted_password, is_admin, first_name, last_name)
     VALUES ($1, $2, $3, $4, $5);`, user.Username, user.Password, user.Admin, user.FirstName, user.LastName)
 
@@ -19,41 +19,17 @@ func (client *Client) StoreUser(user types.User) error {
 	return nil
 }
 
-func (client *Client) StoreVoter(voter types.Voter) error {
-	tx, err := client.db.Begin()
+func (client *Client) StoreVoter(tx *sql.Tx, voter types.Voter) error {
+	err := client.StoreUser(tx, voter.User)
 
 	if err != nil {
-		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
+		return fmt.Errorf("stored user: %w: %s", cerr.ErrDB, err.Error())
 	}
 
 	_, err = tx.Exec(`INSERT INTO voter_details (username, phone_no, email, fingerprint, authority_location)
 	VALUES ($1, $2, $3, $4, $5);`, voter.User.Username, voter.PhoneNo, voter.Email, voter.Fingerprint, voter.Location)
 
 	if err != nil {
-		rollErr := tx.Rollback()
-		if rollErr != nil {
-			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
-		}
-		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
-	}
-
-	err = client.StoreUser(voter.User)
-
-	if err != nil {
-		rollErr := tx.Rollback()
-		if rollErr != nil {
-			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
-		}
-		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
-	}
-
-	err = tx.Commit()
-
-	if err != nil {
-		rollErr := tx.Rollback()
-		if rollErr != nil {
-			return fmt.Errorf("%w: %s: %s", cerr.ErrDB, rollErr.Error(), err.Error())
-		}
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
@@ -102,13 +78,13 @@ func (client *Client) GetUser(username string) (types.User, error) {
 	return user, nil
 }
 
-func (client *Client) DeleteVoter(username string) error {
-	_, err := client.db.Exec(`DELETE FROM voter_details WHERE username = $1;`, username)
+func (client *Client) DeleteVoter(tx *sql.Tx, username string) error {
+	_, err := tx.Exec(`DELETE FROM voter_details WHERE username = $1;`, username)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}
 
-	_, err = client.db.Exec(`DELETE FROM users WHERE username = $1;`, username)
+	_, err = tx.Exec(`DELETE FROM users WHERE username = $1;`, username)
 	if err != nil {
 		return fmt.Errorf("%w: %s", cerr.ErrDB, err.Error())
 	}

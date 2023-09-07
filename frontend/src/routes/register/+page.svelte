@@ -48,7 +48,7 @@
         Register
     </h1>
 </Hero>
-<div class="center-container  spaced-container">
+<div class="center-container  spaced-container body-container">
     <!-- successful registration animation -->
     {#if isRegistered}
         <div class="registered-animation">
@@ -90,7 +90,7 @@
 
             <!-- error message displayed to user -->
             {#if form?.error}
-                <span class="error" style="width: 250px;">{form?.error}</span>
+                <span class="error" style="width: 250px;">Error: {form?.error}</span>
             {/if}
         </form>
     </div>
